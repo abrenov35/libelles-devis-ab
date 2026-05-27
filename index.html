@@ -1,904 +1,523 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AB RENOV 35 — Devis IA</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<style>
-:root{
-  --M:#162D49;--M2:#1e3d62;--L:#A495C3;--LL:#c4b8e0;
-  --C:#F2EDE8;--W:#fff;--G:#EDE8E3;--G2:#F8F5F2;
-  --T:#1A1A2E;--TL:#8B8480;
-  --VT:#2ECC71;--VTD:#27AE60;
-  --RG:#E74C3C;--OR:#F39C12;--BL:#2980B9;
-  --sh:0 1px 4px rgba(22,45,73,.07),0 4px 16px rgba(22,45,73,.06);
-  --sh2:0 2px 8px rgba(22,45,73,.1),0 8px 32px rgba(22,45,73,.1);
-  --r:10px;--r2:6px;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:'Barlow',sans-serif;background:var(--C);color:var(--T);display:flex;flex-direction:column;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AB BASE - Mémoire métier devis</title>
 
-/* ══ HEADER ══ */
-header{
-  height:54px;background:var(--M);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 28px;flex-shrink:0;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  box-shadow:0 2px 20px rgba(10,20,40,.35);
-  position:relative;z-index:100;
-}
-.logo{display:flex;align-items:center;gap:12px;}
-.lm{
-  width:34px;height:34px;background:var(--L);border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:#fff;
-  letter-spacing:-.5px;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(164,149,195,.4);
-}
-.ltxt{display:flex;flex-direction:column;gap:1px;}
-.ln{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:#fff;text-transform:uppercase;letter-spacing:.6px;line-height:1;}
-.ls{font-size:10px;color:rgba(164,149,195,.7);letter-spacing:.3px;line-height:1;}
+  <style>
+    :root {
+      --navy: #162D49;
+      --beige: #F3EAE2;
+      --white: #ffffff;
+      --line: rgba(22,45,73,0.14);
+      --muted: rgba(22,45,73,0.62);
+      --green: #2f8f5b;
+      --orange: #b96b25;
+      --red: #a94442;
+      --radius: 16px;
+    }
 
-/* nav pills */
-.nav{display:flex;gap:2px;background:rgba(0,0,0,.2);padding:4px;border-radius:9px;}
-.nt{
-  padding:5px 20px;border:none;border-radius:6px;
-  font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.7px;cursor:pointer;
-  background:transparent;color:rgba(255,255,255,.5);transition:all .18s;
-}
-.nt:hover:not(.on){color:rgba(255,255,255,.85);}
-.nt.on{background:#fff;color:var(--M);box-shadow:0 1px 4px rgba(0,0,0,.15);}
+    * {
+      box-sizing: border-box;
+    }
 
-/* ══ LAYOUT ══ */
-.wrap{display:flex;flex-direction:column;height:calc(100vh - 54px);overflow:hidden;}
-.pg{display:none;flex:1;flex-direction:column;overflow:hidden;padding:16px 28px;gap:12px;}
-.pg.on{display:flex;}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--beige);
+      color: var(--navy);
+    }
 
-/* ══ INPUTS ══ */
-.ig{display:flex;flex-direction:column;gap:5px;}
-.lbl{font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--TL);}
-input[type=text],input[type=number],select,textarea{
-  font-family:'Barlow',sans-serif;font-size:13px;padding:8px 12px;
-  border:1.5px solid #D9D0C8;border-radius:var(--r2);background:var(--W);
-  color:var(--T);outline:none;transition:all .15s;width:100%;
-}
-input:focus,select:focus,textarea:focus{border-color:var(--L);box-shadow:0 0 0 3px rgba(164,149,195,.18);}
+    header {
+      padding: 22px 18px 14px;
+      text-align: center;
+    }
 
-/* ══ BUTTONS ══ */
-.btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:8px 16px;border:none;border-radius:var(--r2);
-  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;
-  text-transform:uppercase;letter-spacing:.6px;cursor:pointer;
-  transition:all .15s;white-space:nowrap;flex-shrink:0;
-}
-.bp{background:var(--M);color:#fff;} .bp:hover{background:var(--M2);}
-.bs{background:var(--W);color:var(--M);border:1.5px solid #D9D0C8;} .bs:hover{border-color:var(--L);background:var(--G2);}
-.bl{background:var(--L);color:#fff;} .bl:hover{background:#9080b0;}
-.bv{background:var(--VTD);color:#fff;} .bv:hover{background:#219a52;}
-.br{background:var(--RG);color:#fff;} .br:hover{background:#c0392b;}
-.bo{background:var(--OR);color:#fff;} .bo:hover{background:#d68910;}
-.btn:disabled{opacity:.35;cursor:not-allowed;}
-.bsm{padding:6px 12px;font-size:11px;}
-.bxs{padding:4px 9px;font-size:10.5px;border-radius:5px;}
-.sp{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.5px;
+    }
 
-/* ══ PAGE DEVIS ══ */
+    header p {
+      margin: 8px auto 0;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 14px;
+    }
 
-/* Saisie */
-.saisie-bar{
-  display:flex;align-items:center;gap:8px;
-  background:var(--W);border-radius:var(--r);padding:6px 8px;
-  box-shadow:var(--sh);flex-shrink:0;
-}
-.saisie-bar input{
-  flex:1;border:none;outline:none;font-size:14px;padding:6px 8px;
-  background:transparent;color:var(--T);
-}
-.saisie-bar input::placeholder{color:#B8B0A8;}
-.style-pills{display:flex;gap:3px;flex-shrink:0;}
-.pill{
-  padding:5px 12px;border-radius:20px;
-  font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
-  border:1.5px solid #D9D0C8;background:var(--W);color:var(--TL);transition:all .14s;
-}
-.pill.on{background:var(--M);color:#fff;border-color:var(--M);}
-.divider{width:1px;height:26px;background:#E8E0D8;flex-shrink:0;}
+    main {
+      width: min(1120px, calc(100% - 24px));
+      margin: 0 auto 40px;
+    }
 
-/* Variantes */
-.var-bar{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.var-label{font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--TL);}
-.vbtn{
-  padding:5px 14px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;
-  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
-  border:1.5px solid #D9D0C8;background:var(--W);color:var(--TL);transition:all .14s;
-}
-.vbtn.on{background:var(--M);color:#fff;border-color:var(--M);}
-.hypo-link{font-size:11.5px;color:var(--L);cursor:pointer;text-decoration:underline;margin-left:4px;}
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
 
-/* TABLEAU */
-.tbl-wrap{flex:1;min-height:0;overflow:auto;border-radius:var(--r);box-shadow:var(--sh);}
-table{width:100%;border-collapse:collapse;background:var(--W);font-size:12.5px;}
-thead{position:sticky;top:0;z-index:5;}
-thead th{
-  background:var(--M);color:rgba(255,255,255,.8);
-  padding:10px 12px;
-  font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:600;
-  text-transform:uppercase;letter-spacing:.6px;text-align:left;white-space:nowrap;
-}
-th.r,td.r{text-align:right;}
-th.c,td.c{text-align:center;}
-tbody tr{border-bottom:1px solid #F0EAE3;}
-tbody tr:hover{background:#FAFAF8;}
-tbody tr.sep{background:var(--G)!important;}
-tbody tr.sep td{
-  color:var(--M);font-family:'Barlow Condensed',sans-serif;
-  font-weight:700;font-size:11px;text-transform:uppercase;
-  letter-spacing:.8px;padding:7px 12px;
-}
-td{padding:7px 12px;vertical-align:middle;}
-.ci{
-  border:1.5px solid transparent;border-radius:5px;padding:3px 7px;
-  font-family:'Barlow',sans-serif;font-size:12px;background:transparent;outline:none;
-  transition:all .13s;
-}
-.ci:hover{background:var(--G2);border-color:#D9D0C8;}
-.ci:focus{background:var(--W);border-color:var(--L);box-shadow:0 0 0 2px rgba(164,149,195,.15);}
-.ci.r{text-align:right;}
-.des-txt{cursor:text;padding:3px 5px;border-radius:5px;line-height:1.45;transition:background .12s;}
-.des-txt:hover{background:var(--G2);}
-.des-txt.ph{color:#C0B8B0;font-style:italic;}
-.tc{font-weight:600;color:var(--M);}
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.06);
+    }
 
-/* badges */
-.bdg{display:inline-block;font-size:8.5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:3px;vertical-align:middle;letter-spacing:.3px;}
-.bi{background:#FEF3E2;color:#B7660A;}
-.bh{background:#E6F4EA;color:#1A7340;}
-.bm{background:#E8F0FE;color:#1A56B0;}
-.bf{background:#F3E8FF;color:#6B21A8;}
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
 
-/* conf dot */
-.cd{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0;}
-.cg{background:#2ECC71;}.cy{background:#F39C12;}.cr{background:#E74C3C;}
+    .full {
+      grid-column: 1 / -1;
+    }
 
-/* ligne actions */
-.la{display:flex;gap:3px;justify-content:center;}
-.la button{
-  width:24px;height:24px;border:none;border-radius:5px;cursor:pointer;
-  font-size:11px;display:flex;align-items:center;justify-content:center;
-  transition:all .12s;background:transparent;color:var(--TL);
-}
-.la button:hover.le{background:var(--L);color:#fff;}
-.la button:hover.lrg{background:var(--M);color:#fff;}
-.la button:hover.ld{background:var(--RG);color:#fff;}
-.le:hover{background:var(--L)!important;color:#fff!important;}
-.lrg:hover{background:var(--M)!important;color:#fff!important;}
-.ld:hover{background:var(--RG)!important;color:#fff!important;}
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 700;
+      font-size: 13px;
+    }
 
-/* ══ BARRE BAS ══ */
-.barre-bas{
-  display:flex;align-items:center;gap:0;
-  background:var(--M);border-radius:var(--r);
-  height:46px;flex-shrink:0;overflow:hidden;
-  box-shadow:var(--sh2);
-}
-.bb-group{display:flex;align-items:center;gap:1px;padding:0 10px;}
-.bb-sep{width:1px;height:100%;background:rgba(255,255,255,.08);flex-shrink:0;}
-.bb-btn{
-  height:46px;padding:0 13px;border:none;background:transparent;
-  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;
-  text-transform:uppercase;letter-spacing:.6px;cursor:pointer;color:rgba(255,255,255,.6);
-  transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;
-}
-.bb-btn:hover{background:rgba(255,255,255,.07);color:#fff;}
-.bb-btn.accent{color:var(--LL);}
-.bb-btn.accent:hover{background:rgba(164,149,195,.15);color:var(--LL);}
-.bb-btn.green{color:#6EE7A0;}
-.bb-btn.green:hover{background:rgba(46,204,113,.12);color:#6EE7A0;}
-.bb-btn.red{color:#F1948A;}
-.bb-btn.red:hover{background:rgba(231,76,60,.12);color:#F1948A;}
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-size: 15px;
+      color: var(--navy);
+      background: #fff;
+    }
 
-/* TVA pills dans barre bas */
-.tva-group{display:flex;gap:3px;padding:0 10px;}
-.tvab{
-  padding:4px 10px;border:1px solid rgba(255,255,255,.15);border-radius:4px;
-  background:transparent;color:rgba(255,255,255,.5);
-  font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;
-  cursor:pointer;transition:all .14s;white-space:nowrap;
-}
-.tvab.on{background:var(--L);border-color:var(--L);color:#fff;}
-.tvab:hover:not(.on){border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.9);}
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
 
-/* Totaux dans barre bas */
-.bb-tot{display:flex;align-items:center;gap:0;margin-left:auto;}
-.tot-it{
-  display:flex;flex-direction:column;align-items:flex-end;
-  padding:0 14px;border-left:1px solid rgba(255,255,255,.08);
-}
-.tot-it .tl{font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;line-height:1;margin-bottom:2px;}
-.tot-it .tv{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);white-space:nowrap;line-height:1;}
-.tot-it.main{background:rgba(164,149,195,.12);padding:0 20px;}
-.tot-it.main .tl{color:rgba(255,255,255,.5);}
-.tot-it.main .tv{font-size:18px;font-weight:700;color:#fff;}
+    .row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
 
-/* ══ PAGE BASE MÉTIER ══ */
-.utypes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;flex-shrink:0;}
-.utype{
-  background:var(--W);border-radius:var(--r);padding:14px 12px;
-  box-shadow:var(--sh);cursor:pointer;border:2px solid transparent;
-  transition:all .15s;text-align:center;
-}
-.utype:hover{border-color:#D0C4E8;box-shadow:var(--sh2);}
-.utype.sel{border-color:var(--M);background:#F0EDF8;}
-.utype-ic{font-size:24px;margin-bottom:6px;}
-.utype-nm{font-family:'Barlow Condensed',sans-serif;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--M);}
-.utype-ds{font-size:10.5px;color:var(--TL);margin-top:3px;line-height:1.4;}
+    .row2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
 
-.drop-zone{
-  border:2px dashed #D9D0C8;border-radius:var(--r);
-  padding:32px;text-align:center;cursor:pointer;
-  transition:all .15s;background:var(--G2);flex-shrink:0;
-}
-.drop-zone:hover,.drop-zone.over{border-color:var(--L);background:#F0EDF8;}
-.drop-ic{font-size:32px;margin-bottom:10px;}
-.drop-ttl{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--M);}
-.drop-sub{font-size:12px;color:var(--TL);margin-top:5px;}
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
 
-/* Rapport */
-.rapport{background:var(--W);border-radius:var(--r);box-shadow:var(--sh);padding:16px;flex:1;overflow-y:auto;display:none;}
-.rapport.on{display:block;}
-.rap-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.rap-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--M);text-transform:uppercase;letter-spacing:.5px;}
-.rap-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;}
-.rap-it{padding:10px;border-radius:var(--r2);text-align:center;}
-.rap-ok{background:#E6F4EA;} .rap-warn{background:#FEF9E7;} .rap-new{background:#EBF3FD;} .rap-alert{background:#FDECEC;}
-.rap-itl{font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--TL);margin-bottom:3px;}
-.rap-itv{font-size:20px;font-weight:700;color:var(--M);}
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
 
-/* Imports table */
-.imp-card{background:var(--W);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
-.itbl{width:100%;border-collapse:collapse;font-size:12px;}
-.itbl th{background:var(--G2);padding:7px 10px;font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:left;color:var(--TL);}
-.itbl td{padding:7px 10px;border-bottom:1px solid var(--G);}
-.itbl tr:hover td{background:var(--G2);}
-.st{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;}
-.stv{background:#E6F4EA;color:#1A7340;} .stw{background:#FEF9E7;color:#856404;} .str{background:#FDECEC;color:#8B1A1A;}
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 15px;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--navy);
+      color: white;
+      font-size: 14px;
+    }
 
-/* ══ BIBLIO ══ */
-.bib-grid{display:flex;flex-direction:column;gap:7px;overflow-y:auto;flex:1;}
-.bc{background:var(--W);border-radius:var(--r);padding:12px 15px;box-shadow:var(--sh);display:grid;grid-template-columns:1fr auto;gap:8px;border-left:3px solid transparent;transition:all .14s;}
-.bc:hover{border-left-color:var(--L);box-shadow:var(--sh2);}
-.bc-top{display:flex;gap:7px;align-items:center;margin-bottom:4px;}
-.bc-pre{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;color:var(--M);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bc-tag{font-size:9.5px;font-family:'Barlow Condensed',sans-serif;font-weight:600;background:var(--G);color:var(--TL);padding:2px 7px;border-radius:4px;}
-.bc-lib{font-size:12.5px;color:var(--T);font-style:italic;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45;}
-.bc-meta{display:flex;gap:12px;font-size:11px;color:var(--TL);}
-.bc-prix{font-weight:600;color:var(--M);}
-.bc-acts{display:flex;flex-direction:column;gap:4px;justify-content:center;}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:var(--TL);gap:8px;font-size:13px;}
+    button.secondary {
+      background: #fff;
+      color: var(--navy);
+      border: 1px solid var(--line);
+    }
 
-/* ══ MODALS ══ */
-.ov{display:none;position:fixed;inset:0;background:rgba(15,25,45,.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
-.ov.on{display:flex;}
-.md{background:var(--C);border-radius:14px;padding:24px;width:580px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(10,20,40,.3);display:flex;flex-direction:column;gap:13px;}
-.md-lg{width:700px;}
-.mh{display:flex;justify-content:space-between;align-items:center;}
-.mt{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:var(--M);letter-spacing:.4px;}
-.mx{width:28px;height:28px;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--TL);border-radius:6px;transition:background .12s;display:flex;align-items:center;justify-content:center;}
-.mx:hover{background:#E0D8D0;}
-.mf{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
-.mg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.mg5{display:grid;grid-template-columns:80px 1fr 78px 78px 105px;gap:8px;}
+    button.green {
+      background: var(--green);
+    }
 
-/* ══ TOAST ══ */
-#toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;max-width:360px;}
-#toast.on{opacity:1;transform:translateY(0);}
-#toast.ok{background:var(--M);color:#fff;}
-#toast.err{background:var(--RG);color:#fff;}
-#toast.inf{background:var(--L);color:#fff;}
+    .status {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      display: none;
+      font-size: 13px;
+    }
 
-/* scrollbar */
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(164,149,195,.35);border-radius:2px;}
+    .status.ok {
+      display: block;
+      background: rgba(47,143,91,0.12);
+      color: var(--green);
+    }
 
-@media print{
-  header,.nav,.saisie-bar,.style-pills,.var-bar,.barre-bas,.la,
-  .drop-zone,.utypes,#pg-base,#pg-bib{display:none!important;}
-  body{background:#fff;overflow:visible;}
-  .wrap,.pg.on,.tbl-wrap{display:block;height:auto;overflow:visible;}
-  .tbl-wrap{box-shadow:none;}
-  @page{margin:1.5cm;size:A4;}
-}
-</style>
+    .status.error {
+      display: block;
+      background: rgba(169,68,66,0.12);
+      color: var(--red);
+    }
+
+    .pillbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      background: #fff;
+    }
+
+    .preview {
+      white-space: pre-wrap;
+      background: rgba(22,45,73,0.04);
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 150px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 820px) {
+      .grid, .row, .row2 {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <header>
+    <h1>AB BASE</h1>
+    <p>Mémoire métier AB RENOV 35 pour structurer les libellés, prix, unités, lots, imports fournisseurs, devis validés et retours chantier. Les clients restent gérés dans Vertuoza.</p>
+  </header>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="lm">AB</div>
-    <div class="ltxt">
-      <div class="ln">AB RENOV 35</div>
-      <div class="ls">Devis IA · Vertuoza</div>
-    </div>
-  </div>
-  <nav class="nav">
-    <button class="nt on" onclick="nav('devis',this)">Devis</button>
-    <button class="nt" onclick="nav('base',this)">Base métier</button>
-    <button class="nt" onclick="nav('bib',this)">Bibliothèque</button>
-  </nav>
-</header>
+  <main class="grid">
 
-<div class="wrap">
+    <section class="card">
+      <h2>1. Nourrir la base métier</h2>
 
-<!-- ══════ PAGE DEVIS ══════ -->
-<div id="pg-devis" class="pg on">
+      <label>Type d’import</label>
+      <select id="typeImport">
+        <option value="devis_valide">Devis AB RENOV validé</option>
+        <option value="devis_fournisseur">Devis fournisseur</option>
+        <option value="facture_fournisseur">Facture fournisseur</option>
+        <option value="libelle_modele">Libellé modèle</option>
+        <option value="retour_chantier">Retour chantier</option>
+        <option value="base_prix">Base prix interne</option>
+      </select>
 
-  <!-- Saisie 1 ligne -->
-  <div class="saisie-bar">
-    <input type="text" id="saisie" placeholder="Rénovation salle de bain, T3 complet, cuisine + sol + peinture…" onkeydown="if(event.key==='Enter')generer()">
-    <div class="divider"></div>
-    <div class="style-pills">
-      <button class="pill on" onclick="setPill('Commercial',this)">Commercial</button>
-      <button class="pill" onclick="setPill('Standard',this)">Standard</button>
-      <button class="pill" onclick="setPill('Technique',this)">Technique</button>
-      <button class="pill" onclick="setPill('Court',this)">Court</button>
-    </div>
-    <div class="divider"></div>
-    <button class="btn bp bsm" id="btn-gen" onclick="generer()"><span id="bgi">✦</span> Générer</button>
-    <label style="cursor:pointer;" title="Importer PDF, Word, Excel, image">
-      <input type="file" id="file-devis" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx" style="display:none" onchange="analyserFichierDevis(this)">
-      <span class="btn bs bsm">⬆ Importer</span>
-    </label>
-  </div>
+      <label>Lot métier</label>
+      <select id="lot">
+        <option value="">Sélectionner</option>
+        <option>Plâtrerie</option>
+        <option>Isolation</option>
+        <option>Peinture</option>
+        <option>Carrelage</option>
+        <option>Faïence</option>
+        <option>Parquet / sol souple</option>
+        <option>Plomberie</option>
+        <option>Sanitaire</option>
+        <option>Électricité</option>
+        <option>Cuisine</option>
+        <option>Menuiserie</option>
+        <option>Autre</option>
+      </select>
 
-  <!-- Variantes (affiché après génération) -->
-  <div id="var-bar" class="var-bar" style="display:none;">
-    <span class="var-label">Variante :</span>
-    <button class="vbtn on" onclick="setVar('standard',this)">🔵 Standard</button>
-    <button class="vbtn" onclick="setVar('eco',this)">💚 Éco −25%</button>
-    <button class="vbtn" onclick="setVar('premium',this)">🟣 Premium +35%</button>
-    <span class="hypo-link" onclick="ouvrirHypo()">📋 Hypothèses IA</span>
-  </div>
+      <label>Source</label>
+      <input id="source" placeholder="Ex : devis fournisseur CEDEO, devis AB validé, retour Morvan..." />
 
-  <!-- Tableau -->
-  <div class="tbl-wrap">
-    <table id="tbl">
-      <thead><tr>
-        <th style="width:30px">#</th>
-        <th style="width:108px">Lot</th>
-        <th>Désignation</th>
-        <th class="r" style="width:62px">Qté</th>
-        <th style="width:70px">Unité</th>
-        <th class="r" style="width:82px">P.U. HT</th>
-        <th class="r" style="width:90px">Total HT</th>
-        <th class="c" style="width:26px"></th>
-        <th class="c" style="width:56px"></th>
-      </tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
+      <label>Document / contenu à analyser</label>
+      <textarea id="contenuImport" placeholder="Coller ici un extrait de devis, une ligne fournisseur, un retour chantier, un libellé validé..."></textarea>
 
-  <!-- Barre bas 1 ligne -->
-  <div class="barre-bas">
-    <div class="bb-group">
-      <button class="bb-btn" onclick="ajouterLigne()">＋ Ligne</button>
-      <button class="bb-btn" onclick="ajouterSep()">＋ Lot</button>
-      <button class="bb-btn accent" onclick="optimiserIA()" id="btn-opt">✦ Optimiser</button>
-      <button class="bb-btn" onclick="copierEmail()">⎘ Email</button>
-      <button class="bb-btn" onclick="window.print()">🖨 Print</button>
-      <button class="bb-btn green" onclick="exportVertuoza()">⬇ Vertuoza</button>
-      <button class="bb-btn red" onclick="vider()">🗑 Vider</button>
-    </div>
-    <div class="bb-sep"></div>
-    <div class="tva-group">
-      <button class="tvab" onclick="setTVA(5.5,this)">5,5%</button>
-      <button class="tvab on" onclick="setTVA(10,this)">10%</button>
-      <button class="tvab" onclick="setTVA(20,this)">20%</button>
-      <button class="tvab" onclick="setTVA(0,this)">Exo.</button>
-    </div>
-    <div class="bb-sep"></div>
-    <div class="bb-tot">
-      <div class="tot-it"><span class="tl">Sous-total HT</span><span class="tv" id="t-ht">0,00 €</span></div>
-      <div class="tot-it"><span class="tl" id="t-tva-lbl">TVA 10%</span><span class="tv" id="t-tva">0,00 €</span></div>
-      <div class="tot-it main"><span class="tl">Total TTC</span><span class="tv" id="t-ttc">0,00 €</span></div>
-    </div>
-  </div>
-
-</div><!-- /pg-devis -->
-
-<!-- ══════ PAGE BASE MÉTIER ══════ -->
-<div id="pg-base" class="pg">
-  <div class="utypes">
-    <div class="utype sel" onclick="selType('fournisseur',this)">
-      <div class="utype-ic">🧾</div>
-      <div class="utype-nm">Facture fournisseur</div>
-      <div class="utype-ds">Prix d'achat, remises, références</div>
-    </div>
-    <div class="utype" onclick="selType('catalogue',this)">
-      <div class="utype-ic">📊</div>
-      <div class="utype-nm">Base prix CSV/Excel</div>
-      <div class="utype-ds">Tarifs et catalogues</div>
-    </div>
-    <div class="utype" onclick="selType('devis_ab',this)">
-      <div class="utype-ic">📋</div>
-      <div class="utype-nm">Devis AB RENOV</div>
-      <div class="utype-ds">Vos propres devis et factures</div>
-    </div>
-    <div class="utype" onclick="selType('chantier',this)">
-      <div class="utype-ic">🏗️</div>
-      <div class="utype-nm">Facture chantier</div>
-      <div class="utype-ds">Coûts réels, bons livraison</div>
-    </div>
-    <div class="utype" onclick="selType('divers',this)">
-      <div class="utype-ic">📁</div>
-      <div class="utype-nm">Document divers</div>
-      <div class="utype-ds">L'IA classifie automatiquement</div>
-    </div>
-  </div>
-
-  <div class="drop-zone" id="dropzone"
-    onclick="document.getElementById('file-base').click()"
-    ondragover="ev(event)" ondrop="drop(event)">
-    <input type="file" id="file-base" accept=".pdf,.jpg,.jpeg,.png,.webp,.xls,.xlsx,.csv,.doc,.docx" multiple style="display:none" onchange="analyserBase(this.files)">
-    <div class="drop-ic">📄</div>
-    <div class="drop-ttl">Déposer vos documents ici ou cliquer pour parcourir</div>
-    <div class="drop-sub" id="drop-hint">Factures fournisseurs · PDF, JPG, Excel, CSV, Word</div>
-  </div>
-
-  <div class="rapport" id="rapport">
-    <div class="rap-hd">
-      <span class="rap-title" id="rap-titre">Analyse</span>
-      <div style="display:flex;gap:7px;">
-        <button class="btn bv bsm" onclick="validerImport()" id="btn-vi">✔ Valider et intégrer</button>
-        <button class="btn br bsm" onclick="rejeterImport()">✕ Rejeter</button>
+      <div class="actions">
+        <button id="btnAnalyse">Analyser</button>
+        <button id="btnSaveImport" class="green">Enregistrer dans AB BASE</button>
       </div>
-    </div>
-    <div class="rap-grid" id="rap-grid"></div>
-    <div class="lbl" style="margin-bottom:8px;">Données extraites</div>
-    <div id="rap-lines" style="display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;"></div>
-  </div>
 
-  <div class="imp-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;">
-      <span class="lbl">Historique des imports</span>
-      <span id="imp-count" style="font-size:11px;color:var(--TL);"></span>
-    </div>
-    <div style="overflow-y:auto;flex:1;">
-      <table class="itbl" id="imp-tbl">
-        <thead><tr><th>Date</th><th>Fichier</th><th>Type</th><th>Fournisseur</th><th class="r">Lignes</th><th>Confiance</th><th>Statut</th><th></th></tr></thead>
-        <tbody id="imp-body"><tr><td colspan="8" style="text-align:center;padding:20px;color:var(--TL);">Aucun import</td></tr></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+      <div id="statusImport" class="status"></div>
+    </section>
 
-<!-- ══════ PAGE BIBLIOTHÈQUE ══════ -->
-<div id="pg-bib" class="pg">
-  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
-    <div style="position:relative;flex:1;">
-      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--TL);font-size:13px;">🔍</span>
-      <input type="text" id="bib-q" placeholder="Rechercher…" oninput="filtrerBib()" style="padding-left:34px;">
-    </div>
-    <span id="bib-count" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--TL);font-weight:700;white-space:nowrap;"></span>
-    <button class="btn bs bsm" onclick="chargerBib()">↻ Actualiser</button>
-  </div>
-  <div class="bib-grid" id="bib-grid">
-    <div class="empty"><span style="font-size:28px">📚</span><span>Bibliothèque vide</span></div>
-  </div>
-</div>
+    <section class="card">
+      <h2>2. Générer ou améliorer un libellé</h2>
 
-</div><!-- /wrap -->
+      <label>Demande métier</label>
+      <textarea id="demandeLibelle" placeholder="Ex : pose de faïence murale 20x60 dans salle de bain, support existant, colle et joints compris..."></textarea>
 
-<!-- MODAL LIGNE -->
-<div class="ov" id="md-ligne">
-  <div class="md md-lg">
-    <div class="mh"><div class="mt">✏ Modifier la ligne</div><button class="mx" onclick="fm('md-ligne')">✕</button></div>
-    <div class="ig"><label class="lbl">Désignation / Libellé</label><textarea id="ll-des" rows="4" style="resize:vertical;"></textarea></div>
-    <div class="mg5">
-      <div class="ig"><label class="lbl">Qté</label><input type="number" id="ll-qte" min="0" step="0.01"></div>
-      <div class="ig"><label class="lbl">Unité</label><select id="ll-uni"><option>m²</option><option>ml</option><option>m³</option><option>unité</option><option>forfait</option><option>heure</option><option>jour</option><option>point</option><option>équipement</option></select></div>
-      <div class="ig"><label class="lbl">P.U. HT</label><input type="number" id="ll-pu" min="0" step="0.01"></div>
-      <div class="ig"><label class="lbl">Total HT</label><input type="number" id="ll-tot" min="0" step="0.01" placeholder="auto"></div>
-      <div class="ig"><label class="lbl">Lot</label><select id="ll-lot"><option>Électricité</option><option>Plomberie</option><option>Sanitaire</option><option>Fourniture</option><option>Pose</option><option>Maçonnerie</option><option>Peinture</option><option>Carrelage</option><option>Menuiserie</option><option>Isolation</option><option>Divers</option></select></div>
-    </div>
-    <div>
-      <div class="lbl" style="margin-bottom:7px;">Régénérer libellé :</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button class="btn bs bxs" onclick="regenModal('Commercial')">Commercial</button>
-        <button class="btn bs bxs" onclick="regenModal('Standard')">Standard</button>
-        <button class="btn bs bxs" onclick="regenModal('Technique')">Technique</button>
-        <button class="btn bs bxs" onclick="regenModal('Court')">Court</button>
+      <div class="row2">
+        <div>
+          <label>Unité</label>
+          <select id="unite">
+            <option>U</option>
+            <option>m²</option>
+            <option>ml</option>
+            <option>forfait</option>
+            <option>jour</option>
+          </select>
+        </div>
+
+        <div>
+          <label>TVA</label>
+          <select id="tva">
+            <option>20%</option>
+            <option>10%</option>
+            <option>5.5%</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div>
-      <div class="lbl" style="margin-bottom:7px;">Chercher dans la bibliothèque :</div>
-      <div style="display:flex;gap:7px;">
-        <input type="text" id="ll-bq" placeholder="Mot-clé…" style="flex:1;font-size:13px;">
-        <button class="btn bs bxs" onclick="rechBib2()">🔍</button>
+
+      <label>Style de rédaction</label>
+      <select id="styleRedaction">
+        <option value="professionnel">Professionnel clair</option>
+        <option value="commercial">Commercial</option>
+        <option value="technique">Technique</option>
+        <option value="synthetique">Synthétique</option>
+      </select>
+
+      <div class="actions">
+        <button id="btnGenerate">Générer le libellé</button>
+        <button id="btnSaveLibelle" class="green">Valider et mémoriser</button>
       </div>
-      <div id="ll-br" style="margin-top:7px;max-height:110px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;"></div>
-    </div>
-    <div class="mf">
-      <button class="btn bo bsm" onclick="appPrixMarche()">📊 Prix marché</button>
-      <button class="btn bs bsm" onclick="fm('md-ligne')">Annuler</button>
-      <button class="btn bp bsm" onclick="appLigne()">✔ Appliquer</button>
-    </div>
-  </div>
-</div>
 
-<!-- MODAL HYPOTHÈSES -->
-<div class="ov" id="md-hypo">
-  <div class="md">
-    <div class="mh"><div class="mt">📋 Hypothèses IA</div><button class="mx" onclick="fm('md-hypo')">✕</button></div>
-    <div id="hypo-txt" style="font-size:13px;line-height:1.75;color:var(--T);"></div>
-    <div class="mf"><button class="btn bp bsm" onclick="fm('md-hypo')">Compris</button></div>
-  </div>
-</div>
+      <p class="hint">Le libellé validé doit devenir une référence réutilisable. AB BASE ne doit pas inventer un prix hors base sans l’indiquer comme estimation non validée.</p>
+    </section>
 
-<!-- MODAL PRIX TYPE -->
-<div class="ov" id="md-pxt">
-  <div class="md" style="width:400px;">
-    <div class="mh"><div class="mt">Type de prix</div><button class="mx" onclick="fm('md-pxt')">✕</button></div>
-    <p style="font-size:13px;color:var(--TL);line-height:1.6;">Ce document contient des prix fournisseurs.<br>S'agit-il de prix <strong style="color:var(--M)">publics</strong> ou <strong style="color:var(--M)">professionnels</strong> ?</p>
-    <div class="mg2">
-      <div id="pt-pub" style="background:var(--W);border-radius:var(--r);padding:16px;border:2px solid #D9D0C8;cursor:pointer;text-align:center;transition:all .14s;" onclick="setPT('public')">
-        <div style="font-size:24px;margin-bottom:6px;">🏷️</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--M);">Prix public</div>
-        <div style="font-size:11px;color:var(--TL);margin-top:3px;">Tarif catalogue</div>
+    <section class="card full">
+      <h2>3. Prix, unité et politique AB RENOV</h2>
+
+      <div class="row">
+        <div>
+          <label>Prix achat HT</label>
+          <input id="prixAchat" type="number" step="0.01" placeholder="Ex : 24.50" />
+        </div>
+
+        <div>
+          <label>Prix marché bas HT</label>
+          <input id="prixBas" type="number" step="0.01" />
+        </div>
+
+        <div>
+          <label>Prix marché haut HT</label>
+          <input id="prixHaut" type="number" step="0.01" />
+        </div>
       </div>
-      <div id="pt-pro" style="background:var(--W);border-radius:var(--r);padding:16px;border:2px solid #D9D0C8;cursor:pointer;text-align:center;transition:all .14s;" onclick="setPT('pro')">
-        <div style="font-size:24px;margin-bottom:6px;">🔑</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--M);">Prix pro</div>
-        <div style="font-size:11px;color:var(--TL);margin-top:3px;">Tarif remisé artisan</div>
+
+      <div class="row">
+        <div>
+          <label>Prix AB RENOV HT</label>
+          <input id="prixAB" type="number" step="0.01" />
+        </div>
+
+        <div>
+          <label>Marge cible</label>
+          <select id="margeCible">
+            <option>20%</option>
+            <option>25%</option>
+            <option>30%</option>
+            <option>35%</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Fiabilité du prix</label>
+          <select id="fiabilitePrix">
+            <option value="base_interne">Base interne validée</option>
+            <option value="fournisseur">Fournisseur</option>
+            <option value="marche">Marché estimatif</option>
+            <option value="a_verifier">À vérifier</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="ig" id="marge-row" style="display:none;">
-      <label class="lbl">Marge à appliquer (%)</label>
-      <input type="number" id="marge-v" value="35" min="0" max="200" step="1">
-    </div>
-    <div class="mf">
-      <button class="btn bs bsm" onclick="fm('md-pxt')">Annuler</button>
-      <button class="btn bp bsm" onclick="continuerAnalyse()">Analyser →</button>
-    </div>
-  </div>
-</div>
 
-<div id="toast"></div>
+      <div class="pillbar">
+        <span class="pill">Prix HT uniquement</span>
+        <span class="pill">Client géré dans Vertuoza</span>
+        <span class="pill">Mémoire métier progressive</span>
+        <span class="pill">Validation humaine obligatoire</span>
+      </div>
+    </section>
 
-<script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbx4rgfT64uDga6qYCZ9KGZtdaM2sQjRhvPjen_oSJTv1PzB-pAm75S12V7J47cLIY6x/exec';
-const LOTS=['Électricité','Plomberie','Sanitaire','Fourniture','Pose','Maçonnerie','Peinture','Carrelage','Menuiserie','Isolation','Divers'];
-const UNITES=['m²','ml','m³','unité','forfait','heure','jour','point','équipement'];
-const SC=['Commercial','Standard','Technique','Court'];
+    <section class="card full">
+      <h2>Résultat / brouillon IA</h2>
+      <div id="preview" class="preview">Le résultat apparaîtra ici après analyse ou génération.</div>
 
-let style='Commercial',tva=10,lignes=[],varBase=[],hypotheses='',impType='fournisseur';
-let impFiles=null,pxType=null,ligneModal=null,bib=[],imports=[];
+      <div class="actions">
+        <button id="btnCopy" class="secondary">Copier le résultat</button>
+        <button id="btnReset" class="secondary">Réinitialiser</button>
+      </div>
+    </section>
 
-/* NAV */
-function nav(id,el){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
-  document.getElementById('pg-'+id).classList.add('on');
-  el.classList.add('on');
-  if(id==='bib') chargerBib();
-}
+  </main>
 
-/* DEVIS */
-function setPill(s,el){style=s;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');}
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbz_YFx2yhXt3btpLGWzRmnb41ozPJsHcHG5dFUFjosa_zY8gqmWqBS9vrKqDZ0-9BKD/exec";
 
-async function generer(){
-  const txt=document.getElementById('saisie').value.trim();
-  if(!txt){toast('Décrivez les travaux.','err');return;}
-  const btn=document.getElementById('btn-gen'),icon=document.getElementById('bgi');
-  btn.disabled=true;icon.innerHTML='<span class="sp"></span>';
-  try{
-    const res=await post({action:'structurer',texte:txt,style});
-    if(res.error) throw new Error(res.error);
-    const nl=(res.lignes||[]).map(l=>({id:uid(),type:'ligne',lot:l.lot||'Divers',designation:l.designation||'',qte:l.quantite||null,unite:l.unite||'m²',pu:l.pu_ht||null,source:'ia',si:0,conf:l.confiance_prix||'faible'}));
-    if(!nl.length){toast('Aucune prestation extraite.','err');return;}
-    lignes=nl;varBase=cp(lignes);hypotheses=res.hypotheses||'';
-    document.getElementById('var-bar').style.display='flex';
-    document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));
-    document.querySelector('.vbtn').classList.add('on');
-    render();toast(`✔ ${nl.length} ligne${nl.length>1?'s':''} générée${nl.length>1?'s':''}.`,'ok');
-  }catch(e){toast('Erreur : '+e.message,'err');}
-  finally{btn.disabled=false;icon.innerHTML='✦';}
-}
+    const $ = (id) => document.getElementById(id);
 
-function setVar(v,el){
-  document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');
-  if(v==='eco') lignes=varBase.map(l=>({...l,id:uid(),pu:l.pu?Math.round(l.pu*.75*100)/100:null}));
-  else if(v==='premium') lignes=varBase.map(l=>({...l,id:uid(),pu:l.pu?Math.round(l.pu*1.35*100)/100:null}));
-  else lignes=cp(varBase);
-  render();toast(v==='eco'?'💚 Variante économique −25%':v==='premium'?'🟣 Premium +35%':'🔵 Standard','inf');
-}
+    function showStatus(id, type, message) {
+      const el = $(id);
+      el.className = "status " + type;
+      el.textContent = message;
+    }
 
-function ouvrirHypo(){
-  if(!hypotheses){toast('Aucune hypothèse.','inf');return;}
-  document.getElementById('hypo-txt').innerHTML=hypotheses.replace(/\n/g,'<br>');
-  om('md-hypo');
-}
+    function getBasePayload(action) {
+      return {
+        action,
+        timestamp: new Date().toISOString(),
+        typeImport: $("typeImport")?.value || "",
+        lot: $("lot")?.value || "",
+        source: $("source")?.value || "",
+        contenuImport: $("contenuImport")?.value || "",
+        demandeLibelle: $("demandeLibelle")?.value || "",
+        unite: $("unite")?.value || "",
+        tva: $("tva")?.value || "",
+        styleRedaction: $("styleRedaction")?.value || "",
+        prixAchat: $("prixAchat")?.value || "",
+        prixBas: $("prixBas")?.value || "",
+        prixHaut: $("prixHaut")?.value || "",
+        prixAB: $("prixAB")?.value || "",
+        margeCible: $("margeCible")?.value || "",
+        fiabilitePrix: $("fiabilitePrix")?.value || ""
+      };
+    }
 
-async function analyserFichierDevis(inp){
-  if(!inp.files[0])return;
-  document.getElementById('btn-gen').disabled=true;
-  toast('Analyse du fichier…','inf');
-  try{
-    const b64=await b64f(inp.files[0]);
-    const res=await post({action:'analyser_fichier',filename:inp.files[0].name,data:b64,type:inp.files[0].type});
-    if(res.error) throw new Error(res.error);
-    lignes=(res.lignes||[]).map(l=>({id:uid(),type:'ligne',lot:l.lot||'Divers',designation:l.designation||'',qte:l.quantite||null,unite:l.unite||'m²',pu:l.pu_ht||null,source:'ia',si:0,conf:'moyen'}));
-    varBase=cp(lignes);render();toast(`✔ ${lignes.length} ligne${lignes.length>1?'s':''} extraite${lignes.length>1?'s':''}.`,'ok');
-  }catch(e){toast('Erreur : '+e.message,'err');}
-  finally{document.getElementById('btn-gen').disabled=false;inp.value='';}
-}
+    async function sendToSheet(payload) {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
 
-/* RENDER */
-function render(){
-  const tb=document.getElementById('tbody');
-  if(!lignes.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:32px;color:#B8B0A8;font-size:13px;">Décrivez les travaux ou importez un fichier</td></tr>';majTot();return;}
-  tb.innerHTML=lignes.map((l,i)=>rLigne(l,i)).join('');majTot();
-}
+      const text = await response.text();
 
-function rLigne(l,i){
-  if(l.type==='sep') return`<tr class="sep" data-i="${i}"><td colspan="8" ondblclick="editSep(${i})">${esc(l.lot)}</td><td class="c"><button style="width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;background:#FDECEA;color:var(--RG);font-size:11px;" onclick="suppr(${i})">✕</button></td></tr>`;
-  const tot=cT(l);
-  const lo=LOTS.map(lt=>`<option${lt===l.lot?' selected':''}>${lt}</option>`).join('');
-  const uo=UNITES.map(u=>`<option${u===l.unite?' selected':''}>${u}</option>`).join('');
-  const src=l.source==='ia'?'<span class="bdg bi">IA</span>':l.source==='bib'?'<span class="bdg bh">BIB</span>':l.source==='marche'?'<span class="bdg bm">MKT</span>':l.source==='import'?'<span class="bdg bf">IMP</span>':'';
-  const cd=l.conf==='eleve'?'cg':l.conf==='moyen'?'cy':'cr';
-  return`<tr data-i="${i}">
-    <td style="text-align:center;"><span class="cd ${cd}"></span><span style="font-size:10px;color:var(--TL);">${i+1}</span></td>
-    <td><select class="ci" style="width:100px;font-size:11px;" onchange="mj(${i},'lot',this.value)">${lo}</select></td>
-    <td style="min-width:220px;max-width:300px;"><div class="des-txt${!l.designation?' ph':''}" ondblclick="editDes(${i})">${l.designation?esc(l.designation.substring(0,85))+(l.designation.length>85?'…':''):'Cliquer pour saisir…'}${src}</div></td>
-    <td class="r"><input type="number" class="ci r" style="width:54px;" value="${l.qte!=null?l.qte:''}" placeholder="—" min="0" step="0.01" onchange="mj(${i},'qte',parseFloat(this.value)||null)"></td>
-    <td><select class="ci" style="width:64px;font-size:11px;" onchange="mj(${i},'unite',this.value)">${uo}</select></td>
-    <td class="r"><input type="number" class="ci r" style="width:74px;" value="${l.pu!=null?l.pu:''}" placeholder="—" min="0" step="0.01" onchange="mj(${i},'pu',parseFloat(this.value)||null)"></td>
-    <td class="r tc">${tot!=null?fmt(tot):'—'}</td>
-    <td class="c"><button style="width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;background:var(--G);color:var(--TL);font-size:11px;transition:all .12s;" onmouseover="this.style.background='var(--M)';this.style.color='#fff'" onmouseout="this.style.background='var(--G)';this.style.color='var(--TL)'" onclick="regenRapide(${i})" title="Régénérer">↻</button></td>
-    <td class="c la">
-      <button class="le" style="background:var(--G);color:var(--TL);" onmouseover="this.style.background='var(--L)';this.style.color='#fff'" onmouseout="this.style.background='var(--G)';this.style.color='var(--TL)'" onclick="ouvrirModal(${i})" title="Modifier">✏</button>
-      <button class="ld" style="background:var(--G);color:var(--TL);" onmouseover="this.style.background='var(--RG)';this.style.color='#fff'" onmouseout="this.style.background='var(--G)';this.style.color='var(--TL)'" onclick="suppr(${i})" title="Supprimer">✕</button>
-    </td>
-  </tr>`;
-}
+      try {
+        return JSON.parse(text);
+      } catch {
+        return { ok: false, message: text };
+      }
+    }
 
-function editDes(i){
-  const row=document.querySelector(`tr[data-i="${i}"]`);if(!row)return;
-  const td=row.querySelector('.des-txt').parentElement;
-  const inp=document.createElement('input');inp.type='text';inp.className='ci';inp.value=lignes[i].designation||'';inp.style.cssText='font-size:13px;width:100%;';
-  inp.onblur=()=>{lignes[i].designation=inp.value;lignes[i].source='';render();};
-  inp.onkeydown=e=>{if(e.key==='Enter'||e.key==='Escape')inp.blur();};
-  td.innerHTML='';td.appendChild(inp);inp.focus();
-}
-function editSep(i){
-  const row=document.querySelector(`tr[data-i="${i}"]`);if(!row)return;
-  const td=row.querySelector('td');
-  const inp=document.createElement('input');inp.type='text';inp.className='ci';inp.value=lignes[i].lot||'';
-  inp.style.cssText='background:transparent;border-color:var(--M);font-size:11px;font-weight:700;text-transform:uppercase;width:100%;';
-  inp.onblur=()=>{lignes[i].lot=inp.value;render();};
-  inp.onkeydown=e=>{if(e.key==='Enter'||e.key==='Escape')inp.blur();};
-  td.innerHTML='';td.appendChild(inp);inp.focus();
-}
-function mj(i,k,v){
-  lignes[i][k]=v;
-  const row=document.querySelector(`tr[data-i="${i}"]`);
-  if(row){const t=cT(lignes[i]);const tc=row.querySelector('.tc');if(tc)tc.textContent=t!=null?fmt(t):'—';}
-  majTot();
-}
-function suppr(i){if(confirm('Supprimer cette ligne ?')){lignes.splice(i,1);render();}}
-function ajouterLigne(){lignes.push({id:uid(),type:'ligne',lot:'Divers',designation:'',qte:null,unite:'m²',pu:null,source:'',si:0,conf:'faible'});render();setTimeout(()=>{const rows=document.querySelectorAll('#tbody tr');const last=rows[rows.length-1];if(last){last.scrollIntoView({block:'nearest'});const d=last.querySelector('.des-txt');if(d)d.dispatchEvent(new MouseEvent('dblclick'));}},60);}
-function ajouterSep(){lignes.push({id:uid(),type:'sep',lot:'Nouveau lot'});render();}
-function vider(){if(!lignes.length||confirm('Vider le devis ?')){lignes=[];varBase=[];document.getElementById('var-bar').style.display='none';render();}}
+    function analyseLocale() {
+      const lot = $("lot").value || "lot non précisé";
+      const contenu = $("contenuImport").value.trim();
+      const source = $("source").value.trim() || "source non précisée";
 
-async function regenRapide(i){
-  const l=lignes[i];if(!l.designation)return;
-  l.si=((l.si||0)+1)%SC.length;const s=SC[l.si];
-  try{const res=await post({action:'generate',prestation:l.designation,style:s});if(res.error)throw new Error(res.error);l.designation=res.libelle||l.designation;if(res.prix_bas&&l.pu==null)l.pu=res.prix_bas;l.source='ia';render();toast(`Style ${s}.`,'inf');}
-  catch(e){toast('Erreur : '+e.message,'err');}
-}
+      if (!contenu) {
+        $("preview").textContent = "Aucun contenu à analyser. Colle une ligne de devis, un extrait fournisseur ou un retour chantier.";
+        return;
+      }
 
-/* TOTAUX */
-function cT(l){if(l.type==='sep')return null;if(l.qte!=null&&l.pu!=null)return Math.round(l.qte*l.pu*100)/100;return null;}
-function cHT(){return lignes.reduce((a,l)=>a+(cT(l)||0),0);}
-function majTot(){
-  const ht=cHT(),tv=Math.round(ht*tva)/100,ttc=Math.round((ht+tv)*100)/100;
-  document.getElementById('t-ht').textContent=fmt(ht);
-  document.getElementById('t-tva').textContent=fmt(tv);
-  document.getElementById('t-ttc').textContent=fmt(ttc);
-  document.getElementById('t-tva-lbl').textContent=tva===0?'Exonéré TVA':`TVA ${tva}%`;
-}
-function setTVA(t,el){tva=t;document.querySelectorAll('.tvab').forEach(b=>b.classList.remove('on'));el.classList.add('on');majTot();}
+      $("preview").textContent =
+`Analyse provisoire AB BASE
 
-/* OPTIMISER */
-async function optimiserIA(){
-  if(!lignes.length){toast('Devis vide.','err');return;}
-  const btn=document.getElementById('btn-opt');btn.innerHTML='<span class="sp"></span>';btn.style.opacity='.7';
-  try{const res=await post({action:'optimiserdevis',lignes});if(res.error)throw new Error(res.error);const s=res.suggestions||[];if(!s.length){toast('Aucune suggestion !','inf');return;}s.forEach(sg=>{const idx=sg.ligne_index;if(idx!=null&&idx<lignes.length){if(sg.nouveau_libelle)lignes[idx].designation=sg.nouveau_libelle;if(sg.prix)lignes[idx].pu=sg.prix;}});render();toast(`${s.length} amélioration${s.length>1?'s':''} appliquée${s.length>1?'s':''}.`,'ok');}
-  catch(e){toast('Erreur : '+e.message,'err');}
-  finally{btn.innerHTML='✦ Optimiser';btn.style.opacity='';}
-}
+Lot : ${lot}
+Source : ${source}
 
-/* EMAIL */
-function copierEmail(){
-  if(!lignes.length){toast('Devis vide.','err');return;}
-  let t='DEVIS AB RENOV 35\n'+'─'.repeat(40)+'\n\n';
-  lignes.forEach(l=>{if(l.type==='sep'){t+=`\n${(l.lot||'LOT').toUpperCase()}\n`;return;}const tot=cT(l);t+=`- ${l.designation||'(sans désignation)'}\n`;if(l.qte!=null||l.pu!=null)t+=`  ${l.qte!=null?l.qte+' '+l.unite:''}${l.pu!=null?' × '+l.pu+' €':''}${tot!=null?' = '+fmt(tot)+' HT':''}\n`;});
-  const ht=cHT(),tv=Math.round(ht*tva)/100;
-  t+='\n'+'─'.repeat(40)+'\nSous-total HT : '+fmt(ht)+'\n'+(tva>0?`TVA ${tva}% : ${fmt(tv)}\n`:'')+`TOTAL TTC : ${fmt(ht+tv)}\n\nDevis valable 3 mois.\nAB RENOV 35\n`;
-  navigator.clipboard.writeText(t).then(()=>toast('✔ Copié !','ok'));
-}
+Contenu reçu :
+${contenu}
 
-/* EXPORT VERTUOZA */
-function exportVertuoza(){
-  if(!lignes.length){toast('Devis vide.','err');return;}
-  const ht=cHT(),tv=Math.round(ht*tva)/100,ttc=Math.round((ht+tv)*100)/100;
-  const rows=[['Référence','Lot','Désignation','Quantité','Unité','P.U. HT €','TVA %','Total HT €']];
-  lignes.forEach((l,i)=>{
-    if(l.type==='sep'){rows.push(['','',`── ${l.lot||'LOT'} ──`,'','','','','']);return;}
-    rows.push(['REF-'+(i+1).toString().padStart(3,'0'),l.lot||'',l.designation||'',l.qte!=null?l.qte:'',l.unite||'m²',l.pu!=null?l.pu:'',tva,cT(l)||'']);
-  });
-  rows.push([],[],[],['','','','','','Sous-total HT','',ht],['','','','','',`TVA ${tva}%`,'',tv],['','','','','','TOTAL TTC','',ttc]);
-  const ws=XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols']=[{wch:12},{wch:14},{wch:55},{wch:10},{wch:10},{wch:14},{wch:8},{wch:14}];
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,'Devis AB RENOV 35',ws);
-  const d=new Date();
-  XLSX.writeFile(wb,`DEVIS_ABRENOV35_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.xlsx`);
-  toast('✔ Excel téléchargé !','ok');
-}
+Points à vérifier :
+- unité cohérente avec le métier
+- prix HT uniquement
+- distinction achat / vente / prix public
+- libellé exploitable dans un devis client
+- fiabilité de la source
+- besoin éventuel de validation humaine
 
-/* MODAL LIGNE */
-function ouvrirModal(i){
-  ligneModal=i;const l=lignes[i];
-  document.getElementById('ll-des').value=l.designation||'';
-  document.getElementById('ll-qte').value=l.qte!=null?l.qte:'';
-  document.getElementById('ll-uni').value=l.unite||'m²';
-  document.getElementById('ll-pu').value=l.pu!=null?l.pu:'';
-  document.getElementById('ll-tot').value='';
-  document.getElementById('ll-lot').value=l.lot||'Divers';
-  document.getElementById('ll-bq').value='';
-  document.getElementById('ll-br').innerHTML='';
-  om('md-ligne');
-}
-function appLigne(){
-  if(ligneModal===null)return;
-  const l=lignes[ligneModal];
-  l.designation=document.getElementById('ll-des').value;
-  l.qte=parseFloat(document.getElementById('ll-qte').value)||null;
-  l.unite=document.getElementById('ll-uni').value;
-  l.pu=parseFloat(document.getElementById('ll-pu').value)||null;
-  l.lot=document.getElementById('ll-lot').value;
-  const tm=parseFloat(document.getElementById('ll-tot').value);
-  if(!isNaN(tm)&&tm>0&&l.pu==null){l.qte=1;l.unite='forfait';l.pu=tm;}
-  render();fm('md-ligne');toast('Ligne mise à jour.','ok');
-}
-async function regenModal(s){
-  const des=document.getElementById('ll-des').value.trim()||(ligneModal!=null?lignes[ligneModal].designation:'');
-  if(!des){toast('Aucune désignation.','err');return;}
-  const btn=event.target;btn.disabled=true;btn.textContent='…';
-  try{const res=await post({action:'generate',prestation:des,style:s});if(res.error)throw new Error(res.error);document.getElementById('ll-des').value=res.libelle||des;if(res.prix_bas&&!document.getElementById('ll-pu').value)document.getElementById('ll-pu').value=res.prix_bas;if(res.unite)document.getElementById('ll-uni').value=res.unite;toast(`Régénéré (${s}).`,'ok');}
-  catch(e){toast('Erreur : '+e.message,'err');}
-  finally{btn.disabled=false;btn.textContent=s;}
-}
-function rechBib2(){
-  const q=document.getElementById('ll-bq').value.trim().toLowerCase();if(!q)return;
-  const r=bib.filter(l=>(l.prestation||'').toLowerCase().includes(q)||(l.libelle||'').toLowerCase().includes(q)).slice(0,5);
-  const c=document.getElementById('ll-br');
-  if(!r.length){c.innerHTML='<p style="font-size:12px;color:var(--TL);">Aucun résultat.</p>';return;}
-  c.innerHTML=r.map(l=>`<div style="background:var(--W);border-radius:5px;padding:7px 10px;border:1px solid var(--G);cursor:pointer;font-size:12px;" onclick="selBib2('${esc(l.id||'')}')"><strong style="color:var(--M);font-size:11px;">${esc(l.prestation||'')}</strong><br><span style="font-style:italic;color:var(--TL);">${esc((l.libelle||'').substring(0,70))}…</span>${l.prix_bas?`<span style="float:right;font-weight:600;color:var(--M);">${l.prix_bas}€</span>`:''}</div>`).join('');
-}
-function selBib2(id){
-  const l=bib.find(x=>x.id==id);if(!l)return;
-  document.getElementById('ll-des').value=l.libelle||'';
-  document.getElementById('ll-uni').value=l.unite||'m²';
-  if(l.prix_abrenov)document.getElementById('ll-pu').value=l.prix_abrenov;
-  else if(l.prix_bas)document.getElementById('ll-pu').value=l.prix_bas;
-  if(ligneModal!=null)lignes[ligneModal].source='bib';
-  document.getElementById('ll-br').innerHTML='';
-  toast('Libellé sélectionné.','ok');
-}
-async function appPrixMarche(){
-  const des=document.getElementById('ll-des').value.trim();if(!des)return;
-  try{const res=await get('listprix');const prix=res.prix||[];const dn=des.toLowerCase();const m=prix.find(p=>(p.prestation||'').toLowerCase().split(' ').some(w=>w.length>3&&dn.includes(w)));if(m&&m.prix_bas){document.getElementById('ll-pu').value=m.prix_bas;if(m.unite)document.getElementById('ll-uni').value=m.unite;if(ligneModal!=null)lignes[ligneModal].source='marche';toast(`Prix marché : ${m.prix_bas}€/${m.unite}.`,'ok');}else{toast('Aucun prix marché trouvé.','inf');}}
-  catch(e){toast('Erreur : '+e.message,'err');}
-}
+Décision recommandée :
+Ne pas intégrer automatiquement comme référence définitive tant que le prix AB RENOV et l’unité n’ont pas été validés.`;
+    }
 
-/* BASE MÉTIER */
-const TH={'fournisseur':'Factures fournisseurs · PDF, JPG, Excel, CSV','catalogue':'Bases prix CSV/Excel · catalogues fournisseurs','devis_ab':'Vos devis et factures AB RENOV 35 · PDF, Word, Excel','chantier':'Factures chantier, bons livraison · PDF, JPG','divers':'Tout document · l\'IA classifie automatiquement'};
-function selType(t,el){impType=t;document.querySelectorAll('.utype').forEach(u=>u.classList.remove('sel'));el.classList.add('sel');document.getElementById('drop-hint').textContent=TH[t]||'';}
-function ev(e){e.preventDefault();document.getElementById('dropzone').classList.add('over');}
-function drop(e){e.preventDefault();document.getElementById('dropzone').classList.remove('over');analyserBase(e.dataTransfer.files);}
-async function analyserBase(files){if(!files||!files.length)return;impFiles=files;if(impType==='fournisseur'||impType==='catalogue'){om('md-pxt');return;}lancerAnalyse(null,null);}
-function setPT(t){pxType=t;document.getElementById('pt-pub').style.borderColor=t==='public'?'var(--M)':'#D9D0C8';document.getElementById('pt-pro').style.borderColor=t==='pro'?'var(--M)':'#D9D0C8';document.getElementById('marge-row').style.display=t==='pro'?'block':'none';}
-async function continuerAnalyse(){if(!pxType){toast('Choisissez le type de prix.','err');return;}const m=pxType==='pro'?parseFloat(document.getElementById('marge-v').value)||35:0;fm('md-pxt');lancerAnalyse(pxType,m);}
-async function lancerAnalyse(pt,mg){
-  const dz=document.getElementById('dropzone');
-  dz.innerHTML='<div class="drop-ic">⏳</div><div class="drop-ttl">Analyse en cours…</div><div class="drop-sub">Extraction par IA</div>';
-  document.getElementById('rapport').classList.remove('on');
-  try{
-    const file=impFiles[0];const b64=await b64f(file);
-    const res=await post({action:'analyser_document',filename:file.name,data:b64,type:file.type,doc_type:impType,prix_type:pt,marge:mg});
-    if(res.error)throw new Error(res.error);
-    affRapport(res,file.name);
-    const imp={id:uid(),date:new Date().toLocaleDateString('fr-FR'),fichier:file.name,type:impType,fournisseur:res.fournisseur||'—',lignes:res.nb_lignes||0,conf:res.confiance||50,statut:'à vérifier',data:res};
-    imports.unshift(imp);renderImp();toast('Analyse terminée.','ok');
-  }catch(e){toast('Erreur : '+e.message,'err');}
-  finally{resetDZ();}
-}
-function resetDZ(){const dz=document.getElementById('dropzone');dz.innerHTML=`<input type="file" id="file-base" accept=".pdf,.jpg,.jpeg,.png,.webp,.xls,.xlsx,.csv,.doc,.docx" multiple style="display:none" onchange="analyserBase(this.files)"><div class="drop-ic">📄</div><div class="drop-ttl">Déposer vos documents ici ou cliquer pour parcourir</div><div class="drop-sub" id="drop-hint">${TH[impType]||''}</div>`;dz.onclick=()=>document.getElementById('file-base').click();}
-function affRapport(res,fn){
-  const rp=document.getElementById('rapport');
-  document.getElementById('rap-titre').textContent='Analyse : '+fn;
-  const nb=res.nb_lignes||0,cf=res.confiance||0,nn=res.nb_nouveaux||0,nu=res.nb_mis_a_jour||0,nd=res.nb_doublons||0,ni=res.nb_incertains||0;
-  document.getElementById('rap-grid').innerHTML=`
-    <div class="rap-it rap-ok"><div class="rap-itl">✅ Extraites</div><div class="rap-itv">${nb}</div></div>
-    <div class="rap-it rap-new"><div class="rap-itl">🆕 Nouveaux</div><div class="rap-itv">${nn}</div></div>
-    <div class="rap-it rap-ok"><div class="rap-itl">📈 Mis à jour</div><div class="rap-itv">${nu}</div></div>
-    <div class="rap-it rap-warn"><div class="rap-itl">🔁 Doublons</div><div class="rap-itv">${nd}</div></div>
-    <div class="rap-it ${ni>0?'rap-alert':'rap-ok'}"><div class="rap-itl">⚠️ Incertains</div><div class="rap-itv">${ni}</div></div>
-    <div class="rap-it ${cf>=70?'rap-ok':cf>=40?'rap-warn':'rap-alert'}"><div class="rap-itl">🎯 Confiance</div><div class="rap-itv">${cf}%</div></div>`;
-  const lines=res.lignes||[];
-  document.getElementById('rap-lines').innerHTML=lines.slice(0,15).map(l=>`<div style="background:var(--G2);border-radius:5px;padding:6px 10px;font-size:12px;display:flex;justify-content:space-between;gap:10px;"><span style="flex:1;">${esc(l.designation||l.prestation||'')}</span><span style="color:var(--TL);">${l.unite||'m²'}</span><span style="font-weight:600;color:var(--M);">${l.pu_ht||l.prix||'?'} €</span></div>`).join('')+(lines.length>15?`<div style="text-align:center;font-size:11px;color:var(--TL);padding:5px;">+${lines.length-15} autres…</div>`:'');
-  rp._data=res;rp.classList.add('on');
-}
-async function validerImport(){
-  const rp=document.getElementById('rapport');if(!rp._data){toast('Aucune donnée.','err');return;}
-  const btn=document.getElementById('btn-vi');btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
-  try{const res=await post({action:'valider_import',data:rp._data});if(res.error)throw new Error(res.error);const i=imports.findIndex(x=>x.data===rp._data);if(i>=0)imports[i].statut='validé';renderImp();rp.classList.remove('on');rp._data=null;toast(`✔ ${res.nb_integres||0} ligne${(res.nb_integres||0)>1?'s':''} intégrée${(res.nb_integres||0)>1?'s':''}.`,'ok');}
-  catch(e){toast('Erreur : '+e.message,'err');}
-  finally{btn.disabled=false;btn.innerHTML='✔ Valider et intégrer';}
-}
-function rejeterImport(){const rp=document.getElementById('rapport');const i=imports.findIndex(x=>x.data===rp._data);if(i>=0)imports[i].statut='rejeté';renderImp();rp.classList.remove('on');rp._data=null;toast('Rejeté.','inf');}
-function renderImp(){
-  document.getElementById('imp-count').textContent=`${imports.length} document${imports.length>1?'s':''}`;
-  const TL={fournisseur:'Facture fourn.',catalogue:'Base prix',devis_ab:'Devis AB',chantier:'Chantier',divers:'Divers'};
-  if(!imports.length){document.getElementById('imp-body').innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--TL);font-size:12px;">Aucun import</td></tr>';return;}
-  document.getElementById('imp-body').innerHTML=imports.map(m=>`<tr><td>${m.date}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(m.fichier)}</td><td>${TL[m.type]||m.type}</td><td>${esc(m.fournisseur)}</td><td class="r">${m.lignes}</td><td>${m.conf}%</td><td><span class="st ${m.statut==='validé'?'stv':m.statut==='rejeté'?'str':'stw'}">${m.statut}</span></td><td><button class="btn br bxs" onclick="imports=imports.filter(i=>i.id!=='${m.id}');renderImp();">✕</button></td></tr>`).join('');
-}
+    function generationLocale() {
+      const demande = $("demandeLibelle").value.trim();
+      const lot = $("lot").value || "lot à préciser";
+      const unite = $("unite").value;
+      const tva = $("tva").value;
+      const prixAB = $("prixAB").value;
+      const fiabilite = $("fiabilitePrix").value;
 
-/* BIBLIOTHÈQUE */
-async function chargerBib(){
-  const g=document.getElementById('bib-grid');g.innerHTML='<div class="empty"><span style="font-size:24px">⏳</span><span>Chargement…</span></div>';
-  try{const res=await get('list');if(res.error)throw new Error(res.error);bib=(res.libelles||[]).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));filtrerBib();}
-  catch(e){g.innerHTML=`<div class="empty"><span>❌ ${esc(e.message)}</span></div>`;}
-}
-function filtrerBib(){
-  const q=document.getElementById('bib-q').value.toLowerCase().trim();
-  const f=q?bib.filter(l=>(l.prestation||'').toLowerCase().includes(q)||(l.libelle||'').toLowerCase().includes(q)):bib;
-  document.getElementById('bib-count').textContent=`${f.length} libellé${f.length!==1?'s':''}`;
-  if(!f.length){document.getElementById('bib-grid').innerHTML='<div class="empty"><span style="font-size:24px">🔍</span><span>Aucun résultat</span></div>';return;}
-  document.getElementById('bib-grid').innerHTML=f.map(l=>{const d=l.date?new Date(l.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';const p=l.prix_bas&&l.prix_haut?`${l.prix_bas}–${l.prix_haut}€/${l.unite||'m²'}`:l.prix_bas?`${l.prix_bas}€/${l.unite||'m²'}`:null;return`<div class="bc"><div><div class="bc-top"><div class="bc-pre">${esc(l.prestation||'')}</div><span class="bc-tag">${esc(l.unite||'m²')}</span></div><div class="bc-lib">${esc(l.libelle||'')}</div><div class="bc-meta">${p?`<span class="bc-prix">💰 ${esc(p)}</span>`:''}${l.prix_abrenov?`<span class="bc-prix">AB: ${l.prix_abrenov}€</span>`:''}<span>📅 ${d}</span></div></div><div class="bc-acts"><button class="btn bs bxs" onclick="navigator.clipboard.writeText('${esc(l.libelle||'')}').then(()=>toast('Copié !','ok'))">⎘</button><button class="btn bl bxs" onclick="libVD('${esc(l.id||'')}')">→ Devis</button><button class="btn br bxs" onclick="suppB('${esc(l.id||'')}')">✕</button></div></div>`;}).join('');
-}
-function libVD(id){const l=bib.find(x=>x.id==id);if(!l)return;lignes.push({id:uid(),type:'ligne',lot:'Divers',designation:l.libelle||'',qte:null,unite:l.unite||'m²',pu:l.prix_abrenov||l.prix_bas||null,source:'bib',si:0,conf:'eleve'});nav('devis',document.querySelector('.nt'));render();toast('Ajouté au devis.','ok');}
-async function suppB(id){if(!confirm('Supprimer ?'))return;try{const res=await post({action:'delete',id});if(res.error)throw new Error(res.error);bib=bib.filter(x=>x.id!=id);filtrerBib();toast('Supprimé.','inf');}catch(e){toast('Erreur : '+e.message,'err');}}
+      if (!demande) {
+        $("preview").textContent = "Aucune demande métier saisie.";
+        return;
+      }
 
-/* FETCH */
-async function post(b){const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});return r.json();}
-async function get(a){const r=await fetch(`${SCRIPT_URL}?action=${a}`);return r.json();}
-async function b64f(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});}
+      $("preview").textContent =
+`Libellé brouillon AB BASE
 
-/* MODALS / TOAST / UTILS */
-function om(id){document.getElementById(id).classList.add('on');}
-function fm(id){document.getElementById(id).classList.remove('on');}
-document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
-let _tt;
-function toast(m,t='inf'){const el=document.getElementById('toast');el.textContent=m;el.className='on '+(t==='ok'?'ok':t==='err'?'err':'inf');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),3400);}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
-function fmt(n){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function cp(o){return JSON.parse(JSON.stringify(o));}
+Lot : ${lot}
+Unité : ${unite}
+TVA : ${tva}
 
-// Init
-render();
-</script>
+${demande}
+
+Prix AB RENOV HT : ${prixAB ? prixAB + " €" : "à compléter"}
+Fiabilité prix : ${fiabilite}
+
+Note interne :
+Ce libellé est un brouillon. Il doit être validé avant mémorisation dans la bibliothèque métier.`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      $("btnAnalyse").addEventListener("click", analyseLocale);
+      $("btnGenerate").addEventListener("click", generationLocale);
+
+      $("btnSaveImport").addEventListener("click", async () => {
+        const payload = getBasePayload("save_import_metier");
+
+        try {
+          const result = await sendToSheet(payload);
+
+          if (result.ok) {
+            showStatus("statusImport", "ok", "Import métier enregistré dans AB BASE.");
+          } else {
+            showStatus("statusImport", "error", "Erreur : " + (result.message || "enregistrement impossible"));
+          }
+        } catch (error) {
+          showStatus("statusImport", "error", "Erreur connexion Apps Script.");
+          console.error(error);
+        }
+      });
+
+      $("btnSaveLibelle").addEventListener("click", async () => {
+        const payload = getBasePayload("save_libelle_valide");
+        payload.resultat = $("preview").textContent;
+
+        try {
+          const result = await sendToSheet(payload);
+          alert(result.ok ? "Libellé mémorisé dans AB BASE." : "Erreur : " + result.message);
+        } catch (error) {
+          alert("Erreur connexion Apps Script.");
+          console.error(error);
+        }
+      });
+
+      $("btnCopy").addEventListener("click", async () => {
+        await navigator.clipboard.writeText($("preview").textContent);
+        alert("Résultat copié.");
+      });
+
+      $("btnReset").addEventListener("click", () => {
+        document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+        $("preview").textContent = "Le résultat apparaîtra ici après analyse ou génération.";
+      });
+    });
+  </script>
 </body>
 </html>
