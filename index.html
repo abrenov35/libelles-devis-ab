@@ -7,206 +7,327 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root {
-  --M:#162D49; --L:#A495C3; --C:#F3EAE2; --W:#fff;
-  --G:#F0EBE6; --T:#2A2A2A; --TL:#8A8079;
-  --VT:#27AE60; --RG:#C0392B; --OR:#E67E22; --BL:#1565C0;
-  --sh:0 2px 12px rgba(22,45,73,.09);
-  --sh2:0 6px 24px rgba(22,45,73,.14);
-  --r:8px;
+:root{
+  --M:#162D49;--M2:#1e3d62;--L:#A495C3;--LL:#c4b8e0;
+  --C:#F2EDE8;--W:#fff;--G:#EDE8E3;--G2:#F8F5F2;
+  --T:#1A1A2E;--TL:#8B8480;
+  --VT:#2ECC71;--VTD:#27AE60;
+  --RG:#E74C3C;--OR:#F39C12;--BL:#2980B9;
+  --sh:0 1px 4px rgba(22,45,73,.07),0 4px 16px rgba(22,45,73,.06);
+  --sh2:0 2px 8px rgba(22,45,73,.1),0 8px 32px rgba(22,45,73,.1);
+  --r:10px;--r2:6px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;font-family:'Barlow',sans-serif;background:var(--C);color:var(--T);}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Barlow',sans-serif;background:var(--C);color:var(--T);display:flex;flex-direction:column;}
 
-/* ── HEADER ── */
-header{height:48px;background:var(--M);display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex-shrink:0;box-shadow:0 2px 12px rgba(22,45,73,.3);}
-.logo{display:flex;align-items:center;gap:9px;}
-.lm{width:30px;height:30px;background:var(--L);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;}
-.ln{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:#fff;text-transform:uppercase;letter-spacing:.5px;}
-.ls{font-size:10px;color:rgba(164,149,195,.8);margin-top:1px;}
-.nav{display:flex;gap:2px;}
-.nt{padding:5px 18px;border:1.5px solid transparent;border-radius:5px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;cursor:pointer;background:transparent;color:rgba(212,204,232,.75);transition:all .16s;}
-.nt.on{background:var(--L);color:#fff;border-color:var(--L);}
-.nt:hover:not(.on){border-color:var(--L);color:#fff;}
+/* ══ HEADER ══ */
+header{
+  height:54px;background:var(--M);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;flex-shrink:0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  box-shadow:0 2px 20px rgba(10,20,40,.35);
+  position:relative;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:12px;}
+.lm{
+  width:34px;height:34px;background:var(--L);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:#fff;
+  letter-spacing:-.5px;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(164,149,195,.4);
+}
+.ltxt{display:flex;flex-direction:column;gap:1px;}
+.ln{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:#fff;text-transform:uppercase;letter-spacing:.6px;line-height:1;}
+.ls{font-size:10px;color:rgba(164,149,195,.7);letter-spacing:.3px;line-height:1;}
 
-/* ── LAYOUT ── */
-.wrap{display:flex;flex-direction:column;height:calc(100vh - 50px);overflow:hidden;}
-.pg{display:none;flex-direction:column;flex:1;overflow:hidden;padding:14px 22px;gap:10px;}
+/* nav pills */
+.nav{display:flex;gap:2px;background:rgba(0,0,0,.2);padding:4px;border-radius:9px;}
+.nt{
+  padding:5px 20px;border:none;border-radius:6px;
+  font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.7px;cursor:pointer;
+  background:transparent;color:rgba(255,255,255,.5);transition:all .18s;
+}
+.nt:hover:not(.on){color:rgba(255,255,255,.85);}
+.nt.on{background:#fff;color:var(--M);box-shadow:0 1px 4px rgba(0,0,0,.15);}
+
+/* ══ LAYOUT ══ */
+.wrap{display:flex;flex-direction:column;height:calc(100vh - 54px);overflow:hidden;}
+.pg{display:none;flex:1;flex-direction:column;overflow:hidden;padding:16px 28px;gap:12px;}
 .pg.on{display:flex;}
 
-/* ── FORMS ── */
-.ig{display:flex;flex-direction:column;gap:4px;}
-lbl,label,.lbl{font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--M);}
-input[type=text],input[type=number],select,textarea{font-family:'Barlow',sans-serif;font-size:13px;padding:7px 11px;border:1.5px solid #D8CFC8;border-radius:var(--r);background:#fff;color:var(--T);outline:none;transition:border-color .16s;width:100%;}
-input:focus,select:focus,textarea:focus{border-color:var(--L);box-shadow:0 0 0 3px rgba(164,149,195,.15);}
+/* ══ INPUTS ══ */
+.ig{display:flex;flex-direction:column;gap:5px;}
+.lbl{font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--TL);}
+input[type=text],input[type=number],select,textarea{
+  font-family:'Barlow',sans-serif;font-size:13px;padding:8px 12px;
+  border:1.5px solid #D9D0C8;border-radius:var(--r2);background:var(--W);
+  color:var(--T);outline:none;transition:all .15s;width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--L);box-shadow:0 0 0 3px rgba(164,149,195,.18);}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:none;border-radius:var(--r);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;cursor:pointer;transition:all .16s;white-space:nowrap;flex-shrink:0;}
-.bp{background:var(--M);color:#fff;} .bp:hover{background:#1e3d62;transform:translateY(-1px);}
-.bs{background:#fff;color:var(--M);border:1.5px solid #D8CFC8;} .bs:hover{border-color:var(--L);}
-.bl{background:var(--L);color:#fff;} .bl:hover{background:#8f7db3;}
-.bv{background:var(--VT);color:#fff;} .bv:hover{background:#1e8e4a;}
-.br{background:var(--RG);color:#fff;} .br:hover{background:#a93226;}
-.bo{background:var(--OR);color:#fff;} .bo:hover{background:#d35400;}
-.bb{background:var(--BL);color:#fff;} .bb:hover{background:#0d47a1;}
-.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;}
-.bsm{padding:5px 10px;font-size:10.5px;}
-.bxs{padding:5px 10px;font-size:10.5px;border-radius:5px;}
+/* ══ BUTTONS ══ */
+.btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:8px 16px;border:none;border-radius:var(--r2);
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;
+  text-transform:uppercase;letter-spacing:.6px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;flex-shrink:0;
+}
+.bp{background:var(--M);color:#fff;} .bp:hover{background:var(--M2);}
+.bs{background:var(--W);color:var(--M);border:1.5px solid #D9D0C8;} .bs:hover{border-color:var(--L);background:var(--G2);}
+.bl{background:var(--L);color:#fff;} .bl:hover{background:#9080b0;}
+.bv{background:var(--VTD);color:#fff;} .bv:hover{background:#219a52;}
+.br{background:var(--RG);color:#fff;} .br:hover{background:#c0392b;}
+.bo{background:var(--OR);color:#fff;} .bo:hover{background:#d68910;}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.bsm{padding:6px 12px;font-size:11px;}
+.bxs{padding:4px 9px;font-size:10.5px;border-radius:5px;}
 .sp{display:inline-block;width:11px;height:11px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── CARDS ── */
-.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);}
+/* ══ PAGE DEVIS ══ */
 
-/* ── PAGE DEVIS ── */
-.row-saisie{display:flex;gap:8px;align-items:center;flex-shrink:0;}
-.row-saisie input{flex:1;font-size:14px;padding:10px 14px;}
-.style-pills{display:flex;gap:4px;flex-shrink:0;}
-.pill{padding:5px 11px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;border:1.5px solid #D8CFC8;background:#fff;color:var(--TL);transition:all .15s;}
+/* Saisie */
+.saisie-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--W);border-radius:var(--r);padding:6px 8px;
+  box-shadow:var(--sh);flex-shrink:0;
+}
+.saisie-bar input{
+  flex:1;border:none;outline:none;font-size:14px;padding:6px 8px;
+  background:transparent;color:var(--T);
+}
+.saisie-bar input::placeholder{color:#B8B0A8;}
+.style-pills{display:flex;gap:3px;flex-shrink:0;}
+.pill{
+  padding:5px 12px;border-radius:20px;
+  font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
+  border:1.5px solid #D9D0C8;background:var(--W);color:var(--TL);transition:all .14s;
+}
 .pill.on{background:var(--M);color:#fff;border-color:var(--M);}
+.divider{width:1px;height:26px;background:#E8E0D8;flex-shrink:0;}
+
+/* Variantes */
+.var-bar{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.var-label{font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--TL);}
+.vbtn{
+  padding:5px 14px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
+  border:1.5px solid #D9D0C8;background:var(--W);color:var(--TL);transition:all .14s;
+}
+.vbtn.on{background:var(--M);color:#fff;border-color:var(--M);}
+.hypo-link{font-size:11.5px;color:var(--L);cursor:pointer;text-decoration:underline;margin-left:4px;}
 
 /* TABLEAU */
-.tbl-wrap{flex:1;overflow:auto;border-radius:var(--r);box-shadow:var(--sh);min-height:0;}
-table{width:100%;border-collapse:collapse;background:#fff;font-size:12.5px;}
+.tbl-wrap{flex:1;min-height:0;overflow:auto;border-radius:var(--r);box-shadow:var(--sh);}
+table{width:100%;border-collapse:collapse;background:var(--W);font-size:12.5px;}
 thead{position:sticky;top:0;z-index:5;}
-thead th{background:var(--M);color:#fff;padding:9px 10px;font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left;white-space:nowrap;}
+thead th{
+  background:var(--M);color:rgba(255,255,255,.8);
+  padding:10px 12px;
+  font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.6px;text-align:left;white-space:nowrap;
+}
 th.r,td.r{text-align:right;}
 th.c,td.c{text-align:center;}
-tbody tr{border-bottom:1px solid #F0EAE3;transition:background .1s;}
-tbody tr:hover{background:#FAF7F4;}
-tbody tr.sep{background:var(--M)!important;}
-tbody tr.sep td{color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;padding:6px 10px;}
-td{padding:6px 10px;vertical-align:middle;}
-.ci{border:1px solid #E0D8D0;border-radius:5px;padding:3px 7px;font-family:'Barlow',sans-serif;font-size:12px;background:#fff;outline:none;}
-.ci:focus{border-color:var(--L);}
+tbody tr{border-bottom:1px solid #F0EAE3;}
+tbody tr:hover{background:#FAFAF8;}
+tbody tr.sep{background:var(--G)!important;}
+tbody tr.sep td{
+  color:var(--M);font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:11px;text-transform:uppercase;
+  letter-spacing:.8px;padding:7px 12px;
+}
+td{padding:7px 12px;vertical-align:middle;}
+.ci{
+  border:1.5px solid transparent;border-radius:5px;padding:3px 7px;
+  font-family:'Barlow',sans-serif;font-size:12px;background:transparent;outline:none;
+  transition:all .13s;
+}
+.ci:hover{background:var(--G2);border-color:#D9D0C8;}
+.ci:focus{background:var(--W);border-color:var(--L);box-shadow:0 0 0 2px rgba(164,149,195,.15);}
 .ci.r{text-align:right;}
-.des-txt{cursor:pointer;padding:2px 4px;border-radius:4px;line-height:1.4;}
-.des-txt:hover{background:rgba(164,149,195,.15);}
-.des-txt.ph{color:#B0A89E;font-style:italic;}
+.des-txt{cursor:text;padding:3px 5px;border-radius:5px;line-height:1.45;transition:background .12s;}
+.des-txt:hover{background:var(--G2);}
+.des-txt.ph{color:#C0B8B0;font-style:italic;}
 .tc{font-weight:600;color:var(--M);}
-.bdg{display:inline-block;font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:3px;vertical-align:middle;}
-.bh{background:#E8F5E9;color:#1B5E20;}
-.bi{background:#FFF3E0;color:#BF6000;}
-.bm{background:#E3F2FD;color:#0D47A1;}
-.bf{background:#F3E5F5;color:#6A1B9A;}
-/* Confiance */
-.conf-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px;}
-.cg{background:#27AE60;} .cy{background:#E67E22;} .cr{background:#C0392B;}
-/* Ligne actions */
-.la button{width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;font-size:11px;display:inline-flex;align-items:center;justify-content:center;transition:all .13s;margin:0 1px;}
-.le{background:#EDE8F5;color:var(--L);} .le:hover{background:var(--L);color:#fff;}
-.lrg{background:var(--G);color:var(--M);} .lrg:hover{background:var(--M);color:#fff;}
-.ld{background:#FDECEA;color:var(--RG);} .ld:hover{background:var(--RG);color:#fff;}
 
-/* TOTAUX */
-.barre-bas{display:flex;align-items:center;gap:6px;background:var(--M);border-radius:var(--r);padding:8px 14px;flex-shrink:0;overflow:hidden;}
-.tvab{padding:5px 11px;border:1.5px solid rgba(255,255,255,.22);border-radius:5px;background:transparent;color:rgba(255,255,255,.6);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .14s;white-space:nowrap;flex-shrink:0;}
+/* badges */
+.bdg{display:inline-block;font-size:8.5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:3px;vertical-align:middle;letter-spacing:.3px;}
+.bi{background:#FEF3E2;color:#B7660A;}
+.bh{background:#E6F4EA;color:#1A7340;}
+.bm{background:#E8F0FE;color:#1A56B0;}
+.bf{background:#F3E8FF;color:#6B21A8;}
+
+/* conf dot */
+.cd{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0;}
+.cg{background:#2ECC71;}.cy{background:#F39C12;}.cr{background:#E74C3C;}
+
+/* ligne actions */
+.la{display:flex;gap:3px;justify-content:center;}
+.la button{
+  width:24px;height:24px;border:none;border-radius:5px;cursor:pointer;
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;background:transparent;color:var(--TL);
+}
+.la button:hover.le{background:var(--L);color:#fff;}
+.la button:hover.lrg{background:var(--M);color:#fff;}
+.la button:hover.ld{background:var(--RG);color:#fff;}
+.le:hover{background:var(--L)!important;color:#fff!important;}
+.lrg:hover{background:var(--M)!important;color:#fff!important;}
+.ld:hover{background:var(--RG)!important;color:#fff!important;}
+
+/* ══ BARRE BAS ══ */
+.barre-bas{
+  display:flex;align-items:center;gap:0;
+  background:var(--M);border-radius:var(--r);
+  height:46px;flex-shrink:0;overflow:hidden;
+  box-shadow:var(--sh2);
+}
+.bb-group{display:flex;align-items:center;gap:1px;padding:0 10px;}
+.bb-sep{width:1px;height:100%;background:rgba(255,255,255,.08);flex-shrink:0;}
+.bb-btn{
+  height:46px;padding:0 13px;border:none;background:transparent;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;
+  text-transform:uppercase;letter-spacing:.6px;cursor:pointer;color:rgba(255,255,255,.6);
+  transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.bb-btn:hover{background:rgba(255,255,255,.07);color:#fff;}
+.bb-btn.accent{color:var(--LL);}
+.bb-btn.accent:hover{background:rgba(164,149,195,.15);color:var(--LL);}
+.bb-btn.green{color:#6EE7A0;}
+.bb-btn.green:hover{background:rgba(46,204,113,.12);color:#6EE7A0;}
+.bb-btn.red{color:#F1948A;}
+.bb-btn.red:hover{background:rgba(231,76,60,.12);color:#F1948A;}
+
+/* TVA pills dans barre bas */
+.tva-group{display:flex;gap:3px;padding:0 10px;}
+.tvab{
+  padding:4px 10px;border:1px solid rgba(255,255,255,.15);border-radius:4px;
+  background:transparent;color:rgba(255,255,255,.5);
+  font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;
+  cursor:pointer;transition:all .14s;white-space:nowrap;
+}
 .tvab.on{background:var(--L);border-color:var(--L);color:#fff;}
-.tvab:hover:not(.on){border-color:#fff;color:#fff;}
-.bsep{width:1px;height:22px;background:rgba(255,255,255,.15);flex-shrink:0;margin:0 2px;}
-.tot-it{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;flex-shrink:0;}
-.tot-it .tl{font-size:9px;color:rgba(255,255,255,.5);font-weight:400;text-transform:uppercase;letter-spacing:.3px;}
-.tot-it .tv{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;}
-.tot-it.main .tl{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.6);}
-.tot-it.main .tv{font-size:17px;font-weight:700;}
+.tvab:hover:not(.on){border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.9);}
 
-/* ── PAGE BASE MÉTIER ── */
-.upload-types{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;flex-shrink:0;}
-.utype{background:#fff;border-radius:var(--r);padding:12px;box-shadow:var(--sh);cursor:pointer;border:2px solid transparent;transition:all .16s;text-align:center;}
-.utype:hover{border-color:var(--L);box-shadow:var(--sh2);}
-.utype.sel{border-color:var(--M);background:#EDE8F5;}
-.utype-icon{font-size:22px;margin-bottom:5px;}
-.utype-name{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--M);}
-.utype-desc{font-size:10.5px;color:var(--TL);margin-top:2px;line-height:1.4;}
+/* Totaux dans barre bas */
+.bb-tot{display:flex;align-items:center;gap:0;margin-left:auto;}
+.tot-it{
+  display:flex;flex-direction:column;align-items:flex-end;
+  padding:0 14px;border-left:1px solid rgba(255,255,255,.08);
+}
+.tot-it .tl{font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;line-height:1;margin-bottom:2px;}
+.tot-it .tv{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);white-space:nowrap;line-height:1;}
+.tot-it.main{background:rgba(164,149,195,.12);padding:0 20px;}
+.tot-it.main .tl{color:rgba(255,255,255,.5);}
+.tot-it.main .tv{font-size:18px;font-weight:700;color:#fff;}
 
-.drop-zone{border:2px dashed #D8CFC8;border-radius:var(--r);padding:28px;text-align:center;cursor:pointer;transition:all .16s;background:var(--G);flex-shrink:0;}
-.drop-zone:hover,.drop-zone.over{border-color:var(--L);background:#EDE8F5;}
-.drop-icon{font-size:30px;margin-bottom:8px;}
-.drop-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--M);}
-.drop-sub{font-size:12px;color:var(--TL);margin-top:4px;}
+/* ══ PAGE BASE MÉTIER ══ */
+.utypes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;flex-shrink:0;}
+.utype{
+  background:var(--W);border-radius:var(--r);padding:14px 12px;
+  box-shadow:var(--sh);cursor:pointer;border:2px solid transparent;
+  transition:all .15s;text-align:center;
+}
+.utype:hover{border-color:#D0C4E8;box-shadow:var(--sh2);}
+.utype.sel{border-color:var(--M);background:#F0EDF8;}
+.utype-ic{font-size:24px;margin-bottom:6px;}
+.utype-nm{font-family:'Barlow Condensed',sans-serif;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--M);}
+.utype-ds{font-size:10.5px;color:var(--TL);margin-top:3px;line-height:1.4;}
 
-/* Rapport d'analyse */
-.rapport{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:16px;flex:1;overflow-y:auto;display:none;}
+.drop-zone{
+  border:2px dashed #D9D0C8;border-radius:var(--r);
+  padding:32px;text-align:center;cursor:pointer;
+  transition:all .15s;background:var(--G2);flex-shrink:0;
+}
+.drop-zone:hover,.drop-zone.over{border-color:var(--L);background:#F0EDF8;}
+.drop-ic{font-size:32px;margin-bottom:10px;}
+.drop-ttl{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--M);}
+.drop-sub{font-size:12px;color:var(--TL);margin-top:5px;}
+
+/* Rapport */
+.rapport{background:var(--W);border-radius:var(--r);box-shadow:var(--sh);padding:16px;flex:1;overflow-y:auto;display:none;}
 .rapport.on{display:block;}
-.rap-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--M);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
-.rap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.rap-item{padding:10px 12px;border-radius:6px;border-left:3px solid;}
-.rap-ok{background:#E8F5E9;border-color:#27AE60;}
-.rap-warn{background:#FFF8E1;border-color:#FFC107;}
-.rap-new{background:#E3F2FD;border-color:#1565C0;}
-.rap-alert{background:#FDECEA;border-color:#C0392B;}
-.rap-item-title{font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.rap-item-val{font-size:13px;font-weight:600;color:var(--M);}
-.rap-item-detail{font-size:11.5px;color:var(--TL);margin-top:2px;}
+.rap-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.rap-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--M);text-transform:uppercase;letter-spacing:.5px;}
+.rap-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;}
+.rap-it{padding:10px;border-radius:var(--r2);text-align:center;}
+.rap-ok{background:#E6F4EA;} .rap-warn{background:#FEF9E7;} .rap-new{background:#EBF3FD;} .rap-alert{background:#FDECEC;}
+.rap-itl{font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--TL);margin-bottom:3px;}
+.rap-itv{font-size:20px;font-weight:700;color:var(--M);}
 
-/* Table imports */
-.imports-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;}
-.imports-table th{background:var(--G);padding:7px 10px;font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:left;border-bottom:2px solid #D8CFC8;}
-.imports-table td{padding:7px 10px;border-bottom:1px solid #F0EAE3;}
-.imports-table tr:hover td{background:#FAF7F4;}
-.st{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;}
-.st-v{background:#E8F5E9;color:#1B5E20;}
-.st-w{background:#FFF8E1;color:#856404;}
-.st-r{background:#FDECEA;color:#7B1F1F;}
+/* Imports table */
+.imp-card{background:var(--W);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+.itbl{width:100%;border-collapse:collapse;font-size:12px;}
+.itbl th{background:var(--G2);padding:7px 10px;font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:left;color:var(--TL);}
+.itbl td{padding:7px 10px;border-bottom:1px solid var(--G);}
+.itbl tr:hover td{background:var(--G2);}
+.st{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;}
+.stv{background:#E6F4EA;color:#1A7340;} .stw{background:#FEF9E7;color:#856404;} .str{background:#FDECEC;color:#8B1A1A;}
 
-/* ── PAGE BIBLIOTHÈQUE ── */
-.search-row{display:flex;gap:8px;align-items:center;flex-shrink:0;}
-.search-row input{flex:1;}
+/* ══ BIBLIO ══ */
 .bib-grid{display:flex;flex-direction:column;gap:7px;overflow-y:auto;flex:1;}
-.bib-card{background:#fff;border-radius:var(--r);padding:11px 14px;box-shadow:var(--sh);display:grid;grid-template-columns:1fr auto;gap:8px;border-left:3px solid transparent;transition:all .15s;}
-.bib-card:hover{border-left-color:var(--L);box-shadow:var(--sh2);}
+.bc{background:var(--W);border-radius:var(--r);padding:12px 15px;box-shadow:var(--sh);display:grid;grid-template-columns:1fr auto;gap:8px;border-left:3px solid transparent;transition:all .14s;}
+.bc:hover{border-left-color:var(--L);box-shadow:var(--sh2);}
 .bc-top{display:flex;gap:7px;align-items:center;margin-bottom:4px;}
 .bc-pre{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;color:var(--M);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bc-tag{font-size:9.5px;font-family:'Barlow Condensed',sans-serif;font-weight:600;text-transform:uppercase;background:var(--G);color:var(--TL);padding:2px 6px;border-radius:4px;}
-.bc-lib{font-size:12.5px;color:var(--T);font-style:italic;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4;}
-.bc-meta{font-size:11px;color:var(--TL);display:flex;gap:10px;}
+.bc-tag{font-size:9.5px;font-family:'Barlow Condensed',sans-serif;font-weight:600;background:var(--G);color:var(--TL);padding:2px 7px;border-radius:4px;}
+.bc-lib{font-size:12.5px;color:var(--T);font-style:italic;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45;}
+.bc-meta{display:flex;gap:12px;font-size:11px;color:var(--TL);}
 .bc-prix{font-weight:600;color:var(--M);}
 .bc-acts{display:flex;flex-direction:column;gap:4px;justify-content:center;}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:var(--TL);gap:6px;font-size:13px;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:var(--TL);gap:8px;font-size:13px;}
 
-/* ── MODAL ── */
-.ov{display:none;position:fixed;inset:0;background:rgba(22,45,73,.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+/* ══ MODALS ══ */
+.ov{display:none;position:fixed;inset:0;background:rgba(15,25,45,.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
 .ov.on{display:flex;}
-.md{background:var(--C);border-radius:12px;padding:22px;width:580px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(22,45,73,.25);display:flex;flex-direction:column;gap:12px;}
+.md{background:var(--C);border-radius:14px;padding:24px;width:580px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(10,20,40,.3);display:flex;flex-direction:column;gap:13px;}
 .md-lg{width:700px;}
 .mh{display:flex;justify-content:space-between;align-items:center;}
 .mt{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:var(--M);letter-spacing:.4px;}
-.mx{width:26px;height:26px;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--TL);border-radius:5px;transition:background .13s;}
-.mx:hover{background:#E8DED6;}
-.mf{display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap;}
+.mx{width:28px;height:28px;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--TL);border-radius:6px;transition:background .12s;display:flex;align-items:center;justify-content:center;}
+.mx:hover{background:#E0D8D0;}
+.mf{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
 .mg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.mg4{display:grid;grid-template-columns:1fr 1fr 1fr 100px;gap:10px;}
-.mg5{display:grid;grid-template-columns:80px 1fr 80px 80px 100px;gap:8px;}
+.mg5{display:grid;grid-template-columns:80px 1fr 78px 78px 105px;gap:8px;}
 
-/* ── TOAST ── */
-#toast{position:fixed;bottom:18px;right:18px;padding:9px 16px;border-radius:7px;font-size:12.5px;font-weight:500;z-index:9999;opacity:0;transform:translateY(6px);transition:all .2s;pointer-events:none;max-width:340px;}
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;max-width:360px;}
 #toast.on{opacity:1;transform:translateY(0);}
 #toast.ok{background:var(--M);color:#fff;}
 #toast.err{background:var(--RG);color:#fff;}
 #toast.inf{background:var(--L);color:#fff;}
 
-/* ── SCROLLBAR ── */
+/* scrollbar */
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(164,149,195,.4);border-radius:2px;}
+::-webkit-scrollbar-thumb{background:rgba(164,149,195,.35);border-radius:2px;}
 
 @media print{
-  header,.nav,.row-saisie,.style-pills,.act-bloc,.la,.drop-zone,.upload-types,#pg-base,#pg-bib{display:none!important;}
+  header,.nav,.saisie-bar,.style-pills,.var-bar,.barre-bas,.la,
+  .drop-zone,.utypes,#pg-base,#pg-bib{display:none!important;}
   body{background:#fff;overflow:visible;}
-  .wrap,.pg.on{display:block;height:auto;overflow:visible;}
-  .tbl-wrap{overflow:visible;box-shadow:none;}
-  .tot-card{background:#f5f5f5;color:#000;}
-  .trl,.trv,.tr2.main .trl{color:#333!important;}
+  .wrap,.pg.on,.tbl-wrap{display:block;height:auto;overflow:visible;}
+  .tbl-wrap{box-shadow:none;}
   @page{margin:1.5cm;size:A4;}
 }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="lm">AB</div>
-    <div><div class="ln">AB RENOV 35</div><div class="ls">Devis IA · Vertuoza</div></div>
+    <div class="ltxt">
+      <div class="ln">AB RENOV 35</div>
+      <div class="ls">Devis IA · Vertuoza</div>
+    </div>
   </div>
   <nav class="nav">
     <button class="nt on" onclick="nav('devis',this)">Devis</button>
@@ -217,243 +338,234 @@ td{padding:6px 10px;vertical-align:middle;}
 
 <div class="wrap">
 
-<!-- ══════════ PAGE DEVIS ══════════ -->
+<!-- ══════ PAGE DEVIS ══════ -->
 <div id="pg-devis" class="pg on">
 
   <!-- Saisie 1 ligne -->
-  <div class="row-saisie">
-    <input type="text" id="saisie" placeholder="Décrivez les travaux… ex : rénovation salle de bain, T3 complet, cuisine + sol + peinture" onkeydown="if(event.key==='Enter')generer()">
+  <div class="saisie-bar">
+    <input type="text" id="saisie" placeholder="Rénovation salle de bain, T3 complet, cuisine + sol + peinture…" onkeydown="if(event.key==='Enter')generer()">
+    <div class="divider"></div>
     <div class="style-pills">
-      <button class="pill on" onclick="setPill('Commercial',this)" title="Libellé commercial, donne envie de signer">Commercial</button>
-      <button class="pill" onclick="setPill('Standard',this)" title="Libellé clair et professionnel">Standard</button>
-      <button class="pill" onclick="setPill('Technique',this)" title="Libellé technique avec DTU et normes">Technique</button>
-      <button class="pill" onclick="setPill('Court',this)" title="Libellé court, 1 phrase">Court</button>
+      <button class="pill on" onclick="setPill('Commercial',this)">Commercial</button>
+      <button class="pill" onclick="setPill('Standard',this)">Standard</button>
+      <button class="pill" onclick="setPill('Technique',this)">Technique</button>
+      <button class="pill" onclick="setPill('Court',this)">Court</button>
     </div>
-    <button class="btn bp" id="btn-gen" onclick="generer()"><span id="bgi">✦</span> Générer</button>
-    <label style="cursor:pointer;flex-shrink:0;" title="Uploader un PDF, Word, Excel ou image d'un devis existant">
+    <div class="divider"></div>
+    <button class="btn bp bsm" id="btn-gen" onclick="generer()"><span id="bgi">✦</span> Générer</button>
+    <label style="cursor:pointer;" title="Importer PDF, Word, Excel, image">
       <input type="file" id="file-devis" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx" style="display:none" onchange="analyserFichierDevis(this)">
       <span class="btn bs bsm">⬆ Importer</span>
     </label>
   </div>
 
-  <!-- Variantes -->
-  <div id="variantes-row" style="display:none;flex-shrink:0;">
-    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--TL);">Variante :</span>
-      <button class="btn bv bsm on-var" onclick="setVariante('standard',this)">🔵 Standard</button>
-      <button class="btn bs bsm" onclick="setVariante('eco',this)">💚 Économique −25%</button>
-      <button class="btn bl bsm" onclick="setVariante('premium',this)">🟣 Premium +35%</button>
-      <span id="hypotheses-link" style="font-size:11.5px;color:var(--L);cursor:pointer;margin-left:8px;text-decoration:underline;" onclick="ouvrirHypo()">📋 Hypothèses IA</span>
-    </div>
+  <!-- Variantes (affiché après génération) -->
+  <div id="var-bar" class="var-bar" style="display:none;">
+    <span class="var-label">Variante :</span>
+    <button class="vbtn on" onclick="setVar('standard',this)">🔵 Standard</button>
+    <button class="vbtn" onclick="setVar('eco',this)">💚 Éco −25%</button>
+    <button class="vbtn" onclick="setVar('premium',this)">🟣 Premium +35%</button>
+    <span class="hypo-link" onclick="ouvrirHypo()">📋 Hypothèses IA</span>
   </div>
 
   <!-- Tableau -->
   <div class="tbl-wrap">
     <table id="tbl">
       <thead><tr>
-        <th style="width:32px">#</th>
-        <th style="width:105px">Lot</th>
+        <th style="width:30px">#</th>
+        <th style="width:108px">Lot</th>
         <th>Désignation</th>
-        <th class="r" style="width:64px">Qté</th>
-        <th style="width:72px">Unité</th>
-        <th class="r" style="width:84px">P.U. HT</th>
-        <th class="r" style="width:92px">Total HT</th>
-        <th class="c" style="width:28px"></th>
-        <th class="c" style="width:64px"></th>
+        <th class="r" style="width:62px">Qté</th>
+        <th style="width:70px">Unité</th>
+        <th class="r" style="width:82px">P.U. HT</th>
+        <th class="r" style="width:90px">Total HT</th>
+        <th class="c" style="width:26px"></th>
+        <th class="c" style="width:56px"></th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
 
-  <!-- Totaux + actions -->
+  <!-- Barre bas 1 ligne -->
   <div class="barre-bas">
-    <button class="btn bs bxs" onclick="ajouterLigne()">＋ Ligne</button>
-    <button class="btn bs bxs" onclick="ajouterSep()">＋ Lot</button>
-    <button class="btn bl bxs" onclick="optimiserIA()" id="btn-opt">✦ IA</button>
-    <button class="btn bs bxs" onclick="copierEmail()">⎘ Email</button>
-    <button class="btn bs bxs" onclick="window.print()">🖨</button>
-    <button class="btn bv bxs" onclick="exportVertuoza()">⬇ Vertuoza</button>
-    <button class="btn br bxs" onclick="vider()">🗑</button>
-    <div class="bsep"></div>
-    <button class="tvab" onclick="setTVA(5.5,this)">5,5%</button>
-    <button class="tvab on" onclick="setTVA(10,this)">10%</button>
-    <button class="tvab" onclick="setTVA(20,this)">20%</button>
-    <button class="tvab" onclick="setTVA(0,this)">Exo.</button>
-    <div class="bsep"></div>
-    <div class="tot-it"><span class="tl">Sous-total HT</span><span class="tv" id="t-ht">0,00 €</span></div>
-    <div class="bsep"></div>
-    <div class="tot-it"><span class="tl" id="t-tva-lbl">TVA 10%</span><span class="tv" id="t-tva">0,00 €</span></div>
-    <div class="bsep"></div>
-    <div class="tot-it main" style="margin-left:auto;"><span class="tl">Total TTC</span><span class="tv" id="t-ttc">0,00 €</span></div>
+    <div class="bb-group">
+      <button class="bb-btn" onclick="ajouterLigne()">＋ Ligne</button>
+      <button class="bb-btn" onclick="ajouterSep()">＋ Lot</button>
+      <button class="bb-btn accent" onclick="optimiserIA()" id="btn-opt">✦ Optimiser</button>
+      <button class="bb-btn" onclick="copierEmail()">⎘ Email</button>
+      <button class="bb-btn" onclick="window.print()">🖨 Print</button>
+      <button class="bb-btn green" onclick="exportVertuoza()">⬇ Vertuoza</button>
+      <button class="bb-btn red" onclick="vider()">🗑 Vider</button>
+    </div>
+    <div class="bb-sep"></div>
+    <div class="tva-group">
+      <button class="tvab" onclick="setTVA(5.5,this)">5,5%</button>
+      <button class="tvab on" onclick="setTVA(10,this)">10%</button>
+      <button class="tvab" onclick="setTVA(20,this)">20%</button>
+      <button class="tvab" onclick="setTVA(0,this)">Exo.</button>
+    </div>
+    <div class="bb-sep"></div>
+    <div class="bb-tot">
+      <div class="tot-it"><span class="tl">Sous-total HT</span><span class="tv" id="t-ht">0,00 €</span></div>
+      <div class="tot-it"><span class="tl" id="t-tva-lbl">TVA 10%</span><span class="tv" id="t-tva">0,00 €</span></div>
+      <div class="tot-it main"><span class="tl">Total TTC</span><span class="tv" id="t-ttc">0,00 €</span></div>
+    </div>
   </div>
 
 </div><!-- /pg-devis -->
 
-<!-- ══════════ PAGE BASE MÉTIER ══════════ -->
+<!-- ══════ PAGE BASE MÉTIER ══════ -->
 <div id="pg-base" class="pg">
-
-  <!-- 5 types d'import -->
-  <div class="upload-types">
-    <div class="utype on" onclick="selType('fournisseur',this)">
-      <div class="utype-icon">🧾</div>
-      <div class="utype-name">Facture fournisseur</div>
-      <div class="utype-desc">Prix d'achat, remises, références</div>
+  <div class="utypes">
+    <div class="utype sel" onclick="selType('fournisseur',this)">
+      <div class="utype-ic">🧾</div>
+      <div class="utype-nm">Facture fournisseur</div>
+      <div class="utype-ds">Prix d'achat, remises, références</div>
     </div>
     <div class="utype" onclick="selType('catalogue',this)">
-      <div class="utype-icon">📊</div>
-      <div class="utype-name">Base prix CSV/Excel</div>
-      <div class="utype-desc">Tarifs et catalogues fournisseurs</div>
+      <div class="utype-ic">📊</div>
+      <div class="utype-nm">Base prix CSV/Excel</div>
+      <div class="utype-ds">Tarifs et catalogues</div>
     </div>
     <div class="utype" onclick="selType('devis_ab',this)">
-      <div class="utype-icon">📋</div>
-      <div class="utype-name">Devis AB RENOV</div>
-      <div class="utype-desc">Vos propres devis et factures</div>
+      <div class="utype-ic">📋</div>
+      <div class="utype-nm">Devis AB RENOV</div>
+      <div class="utype-ds">Vos propres devis et factures</div>
     </div>
     <div class="utype" onclick="selType('chantier',this)">
-      <div class="utype-icon">🏗️</div>
-      <div class="utype-name">Facture chantier</div>
-      <div class="utype-desc">Coûts réels, bons livraison</div>
+      <div class="utype-ic">🏗️</div>
+      <div class="utype-nm">Facture chantier</div>
+      <div class="utype-ds">Coûts réels, bons livraison</div>
     </div>
     <div class="utype" onclick="selType('divers',this)">
-      <div class="utype-icon">📁</div>
-      <div class="utype-name">Document divers</div>
-      <div class="utype-desc">L'IA classifie automatiquement</div>
+      <div class="utype-ic">📁</div>
+      <div class="utype-nm">Document divers</div>
+      <div class="utype-ds">L'IA classifie automatiquement</div>
     </div>
   </div>
 
-  <!-- Zone drop -->
-  <div class="drop-zone" id="dropzone" onclick="document.getElementById('file-base').click()"
-       ondragover="ev(event)" ondrop="drop(event)">
+  <div class="drop-zone" id="dropzone"
+    onclick="document.getElementById('file-base').click()"
+    ondragover="ev(event)" ondrop="drop(event)">
     <input type="file" id="file-base" accept=".pdf,.jpg,.jpeg,.png,.webp,.xls,.xlsx,.csv,.doc,.docx" multiple style="display:none" onchange="analyserBase(this.files)">
-    <div class="drop-icon">📄</div>
-    <div class="drop-title">Déposer vos documents ici ou cliquer pour parcourir</div>
-    <div class="drop-sub" id="drop-type-hint">Factures fournisseurs sélectionnées · PDF, JPG, Excel, CSV, Word</div>
+    <div class="drop-ic">📄</div>
+    <div class="drop-ttl">Déposer vos documents ici ou cliquer pour parcourir</div>
+    <div class="drop-sub" id="drop-hint">Factures fournisseurs · PDF, JPG, Excel, CSV, Word</div>
   </div>
 
-  <!-- Rapport -->
   <div class="rapport" id="rapport">
-    <div class="rap-title">
-      <span id="rap-titre">Analyse du document</span>
-      <div style="display:flex;gap:6px;">
-        <button class="btn bv bsm" onclick="validerImport()" id="btn-valider-import">✔ Valider et intégrer</button>
+    <div class="rap-hd">
+      <span class="rap-title" id="rap-titre">Analyse</span>
+      <div style="display:flex;gap:7px;">
+        <button class="btn bv bsm" onclick="validerImport()" id="btn-vi">✔ Valider et intégrer</button>
         <button class="btn br bsm" onclick="rejeterImport()">✕ Rejeter</button>
       </div>
     </div>
     <div class="rap-grid" id="rap-grid"></div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--TL);margin-bottom:8px;">Données extraites</div>
-    <div id="rap-lines" style="display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto;"></div>
+    <div class="lbl" style="margin-bottom:8px;">Données extraites</div>
+    <div id="rap-lines" style="display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;"></div>
   </div>
 
-  <!-- Historique imports -->
-  <div class="card" style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:12px 16px;min-height:0;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-shrink:0;">
+  <div class="imp-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;">
       <span class="lbl">Historique des imports</span>
       <span id="imp-count" style="font-size:11px;color:var(--TL);"></span>
     </div>
     <div style="overflow-y:auto;flex:1;">
-      <table class="imports-table" id="imports-table">
-        <thead><tr>
-          <th>Date</th><th>Fichier</th><th>Type</th><th>Fournisseur</th>
-          <th class="r">Lignes</th><th>Confiance</th><th>Statut</th><th></th>
-        </tr></thead>
-        <tbody id="imports-tbody">
-          <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--TL);font-size:12px;">Aucun import — déposez vos premiers documents ci-dessus</td></tr>
-        </tbody>
+      <table class="itbl" id="imp-tbl">
+        <thead><tr><th>Date</th><th>Fichier</th><th>Type</th><th>Fournisseur</th><th class="r">Lignes</th><th>Confiance</th><th>Statut</th><th></th></tr></thead>
+        <tbody id="imp-body"><tr><td colspan="8" style="text-align:center;padding:20px;color:var(--TL);">Aucun import</td></tr></tbody>
       </table>
     </div>
   </div>
+</div>
 
-</div><!-- /pg-base -->
-
-<!-- ══════════ PAGE BIBLIOTHÈQUE ══════════ -->
+<!-- ══════ PAGE BIBLIOTHÈQUE ══════ -->
 <div id="pg-bib" class="pg">
-  <div class="search-row">
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
     <div style="position:relative;flex:1;">
-      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--TL);font-size:13px;">🔍</span>
-      <input type="text" id="bib-search" placeholder="Rechercher un libellé…" oninput="filtrerBib()" style="padding-left:32px;">
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--TL);font-size:13px;">🔍</span>
+      <input type="text" id="bib-q" placeholder="Rechercher…" oninput="filtrerBib()" style="padding-left:34px;">
     </div>
     <span id="bib-count" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--TL);font-weight:700;white-space:nowrap;"></span>
-    <button class="btn bs bsm" onclick="chargerBib()">↻</button>
+    <button class="btn bs bsm" onclick="chargerBib()">↻ Actualiser</button>
   </div>
   <div class="bib-grid" id="bib-grid">
-    <div class="empty"><span style="font-size:28px;">📚</span><span>Bibliothèque vide — validez des libellés dans le générateur</span></div>
+    <div class="empty"><span style="font-size:28px">📚</span><span>Bibliothèque vide</span></div>
   </div>
 </div>
 
 </div><!-- /wrap -->
 
-<!-- ══════════ MODALS ══════════ -->
-
-<!-- Modal modification ligne -->
+<!-- MODAL LIGNE -->
 <div class="ov" id="md-ligne">
   <div class="md md-lg">
     <div class="mh"><div class="mt">✏ Modifier la ligne</div><button class="mx" onclick="fm('md-ligne')">✕</button></div>
-    <div class="ig"><label>Désignation / Libellé</label><textarea id="ll-des" rows="4" style="resize:vertical;"></textarea></div>
+    <div class="ig"><label class="lbl">Désignation / Libellé</label><textarea id="ll-des" rows="4" style="resize:vertical;"></textarea></div>
     <div class="mg5">
-      <div class="ig"><label>Qté</label><input type="number" id="ll-qte" min="0" step="0.01"></div>
-      <div class="ig"><label>Unité</label><select id="ll-uni"><option>m²</option><option>ml</option><option>m³</option><option>unité</option><option>forfait</option><option>heure</option><option>jour</option><option>point</option><option>équipement</option></select></div>
-      <div class="ig"><label>P.U. HT</label><input type="number" id="ll-pu" min="0" step="0.01"></div>
-      <div class="ig"><label>Total HT</label><input type="number" id="ll-tot" min="0" step="0.01" placeholder="auto"></div>
-      <div class="ig"><label>Lot</label><select id="ll-lot"><option>Électricité</option><option>Plomberie</option><option>Sanitaire</option><option>Fourniture</option><option>Pose</option><option>Maçonnerie</option><option>Peinture</option><option>Carrelage</option><option>Menuiserie</option><option>Isolation</option><option>Divers</option></select></div>
+      <div class="ig"><label class="lbl">Qté</label><input type="number" id="ll-qte" min="0" step="0.01"></div>
+      <div class="ig"><label class="lbl">Unité</label><select id="ll-uni"><option>m²</option><option>ml</option><option>m³</option><option>unité</option><option>forfait</option><option>heure</option><option>jour</option><option>point</option><option>équipement</option></select></div>
+      <div class="ig"><label class="lbl">P.U. HT</label><input type="number" id="ll-pu" min="0" step="0.01"></div>
+      <div class="ig"><label class="lbl">Total HT</label><input type="number" id="ll-tot" min="0" step="0.01" placeholder="auto"></div>
+      <div class="ig"><label class="lbl">Lot</label><select id="ll-lot"><option>Électricité</option><option>Plomberie</option><option>Sanitaire</option><option>Fourniture</option><option>Pose</option><option>Maçonnerie</option><option>Peinture</option><option>Carrelage</option><option>Menuiserie</option><option>Isolation</option><option>Divers</option></select></div>
     </div>
     <div>
-      <div class="lbl" style="margin-bottom:6px;">Régénérer (style) :</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;">
-        <button class="btn bs bxs" onclick="regenLigneModal('Commercial')">Commercial</button>
-        <button class="btn bs bxs" onclick="regenLigneModal('Standard')">Standard</button>
-        <button class="btn bs bxs" onclick="regenLigneModal('Technique')">Technique</button>
-        <button class="btn bs bxs" onclick="regenLigneModal('Court')">Court</button>
+      <div class="lbl" style="margin-bottom:7px;">Régénérer libellé :</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn bs bxs" onclick="regenModal('Commercial')">Commercial</button>
+        <button class="btn bs bxs" onclick="regenModal('Standard')">Standard</button>
+        <button class="btn bs bxs" onclick="regenModal('Technique')">Technique</button>
+        <button class="btn bs bxs" onclick="regenModal('Court')">Court</button>
       </div>
     </div>
     <div>
-      <div class="lbl" style="margin-bottom:6px;">Chercher dans la bibliothèque :</div>
+      <div class="lbl" style="margin-bottom:7px;">Chercher dans la bibliothèque :</div>
       <div style="display:flex;gap:7px;">
-        <input type="text" id="ll-bib-q" placeholder="Mot-clé…" style="flex:1;font-size:12.5px;padding:6px 10px;">
-        <button class="btn bs bxs" onclick="rechBib()">🔍</button>
+        <input type="text" id="ll-bq" placeholder="Mot-clé…" style="flex:1;font-size:13px;">
+        <button class="btn bs bxs" onclick="rechBib2()">🔍</button>
       </div>
-      <div id="ll-bib-res" style="margin-top:6px;max-height:100px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;"></div>
+      <div id="ll-br" style="margin-top:7px;max-height:110px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;"></div>
     </div>
     <div class="mf">
       <button class="btn bo bsm" onclick="appPrixMarche()">📊 Prix marché</button>
       <button class="btn bs bsm" onclick="fm('md-ligne')">Annuler</button>
-      <button class="btn bp bsm" onclick="appliquerLigne()">✔ Appliquer</button>
+      <button class="btn bp bsm" onclick="appLigne()">✔ Appliquer</button>
     </div>
   </div>
 </div>
 
-<!-- Modal hypothèses IA -->
+<!-- MODAL HYPOTHÈSES -->
 <div class="ov" id="md-hypo">
   <div class="md">
-    <div class="mh"><div class="mt">📋 Hypothèses IA utilisées</div><button class="mx" onclick="fm('md-hypo')">✕</button></div>
-    <div id="hypo-content" style="font-size:13px;line-height:1.7;color:var(--T);"></div>
+    <div class="mh"><div class="mt">📋 Hypothèses IA</div><button class="mx" onclick="fm('md-hypo')">✕</button></div>
+    <div id="hypo-txt" style="font-size:13px;line-height:1.75;color:var(--T);"></div>
     <div class="mf"><button class="btn bp bsm" onclick="fm('md-hypo')">Compris</button></div>
   </div>
 </div>
 
-<!-- Modal prix public/pro -->
-<div class="ov" id="md-prix-type">
-  <div class="md" style="width:420px;">
-    <div class="mh"><div class="mt">Type de prix</div><button class="mx" onclick="fm('md-prix-type')">✕</button></div>
-    <p style="font-size:13px;color:var(--TL);line-height:1.6;">Ce document contient des prix fournisseurs.<br>S'agit-il de prix <strong>publics</strong> ou <strong>professionnels</strong> ?</p>
+<!-- MODAL PRIX TYPE -->
+<div class="ov" id="md-pxt">
+  <div class="md" style="width:400px;">
+    <div class="mh"><div class="mt">Type de prix</div><button class="mx" onclick="fm('md-pxt')">✕</button></div>
+    <p style="font-size:13px;color:var(--TL);line-height:1.6;">Ce document contient des prix fournisseurs.<br>S'agit-il de prix <strong style="color:var(--M)">publics</strong> ou <strong style="color:var(--M)">professionnels</strong> ?</p>
     <div class="mg2">
-      <div style="background:#fff;border-radius:var(--r);padding:14px;border:2px solid #D8CFC8;cursor:pointer;text-align:center;" onclick="setPrixType('public')" id="pt-pub">
-        <div style="font-size:22px;margin-bottom:4px;">🏷️</div>
+      <div id="pt-pub" style="background:var(--W);border-radius:var(--r);padding:16px;border:2px solid #D9D0C8;cursor:pointer;text-align:center;transition:all .14s;" onclick="setPT('public')">
+        <div style="font-size:24px;margin-bottom:6px;">🏷️</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--M);">Prix public</div>
-        <div style="font-size:11px;color:var(--TL);margin-top:3px;">Tarif catalogue grand public</div>
+        <div style="font-size:11px;color:var(--TL);margin-top:3px;">Tarif catalogue</div>
       </div>
-      <div style="background:#fff;border-radius:var(--r);padding:14px;border:2px solid #D8CFC8;cursor:pointer;text-align:center;" onclick="setPrixType('pro')" id="pt-pro">
-        <div style="font-size:22px;margin-bottom:4px;">🔑</div>
+      <div id="pt-pro" style="background:var(--W);border-radius:var(--r);padding:16px;border:2px solid #D9D0C8;cursor:pointer;text-align:center;transition:all .14s;" onclick="setPT('pro')">
+        <div style="font-size:24px;margin-bottom:6px;">🔑</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--M);">Prix pro</div>
         <div style="font-size:11px;color:var(--TL);margin-top:3px;">Tarif remisé artisan</div>
       </div>
     </div>
     <div class="ig" id="marge-row" style="display:none;">
-      <label>Marge à appliquer sur le prix pro (%)</label>
-      <input type="number" id="marge-val" value="35" min="0" max="200" step="1">
-      <div style="font-size:11.5px;color:var(--TL);margin-top:3px;">Prix de vente client = prix pro × (1 + marge%)</div>
+      <label class="lbl">Marge à appliquer (%)</label>
+      <input type="number" id="marge-v" value="35" min="0" max="200" step="1">
     </div>
     <div class="mf">
-      <button class="btn bs bsm" onclick="fm('md-prix-type')">Annuler</button>
+      <button class="btn bs bsm" onclick="fm('md-pxt')">Annuler</button>
       <button class="btn bp bsm" onclick="continuerAnalyse()">Analyser →</button>
     </div>
   </div>
@@ -462,355 +574,203 @@ td{padding:6px 10px;vertical-align:middle;}
 <div id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════════ */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4rgfT64uDga6qYCZ9KGZtdaM2sQjRhvPjen_oSJTv1PzB-pAm75S12V7J47cLIY6x/exec';
-const LOTS = ['Électricité','Plomberie','Sanitaire','Fourniture','Pose','Maçonnerie','Peinture','Carrelage','Menuiserie','Isolation','Divers'];
-const UNITES = ['m²','ml','m³','unité','forfait','heure','jour','point','équipement'];
-const STYLES_CYCLE = ['Commercial','Standard','Technique','Court'];
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbx4rgfT64uDga6qYCZ9KGZtdaM2sQjRhvPjen_oSJTv1PzB-pAm75S12V7J47cLIY6x/exec';
+const LOTS=['Électricité','Plomberie','Sanitaire','Fourniture','Pose','Maçonnerie','Peinture','Carrelage','Menuiserie','Isolation','Divers'];
+const UNITES=['m²','ml','m³','unité','forfait','heure','jour','point','équipement'];
+const SC=['Commercial','Standard','Technique','Court'];
 
-/* ═══════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════ */
-let style = 'Commercial';
-let tva = 10;
-let lignes = [];
-let varianteBase = [];   // sauvegarde pour variantes éco/premium
-let hypotheses = '';
-let importType = 'fournisseur';
-let importFiles = null;
-let prixTypeChoisi = null;
-let ligneModal = null;
-let bibliotheque = [];
-let imports = [];
+let style='Commercial',tva=10,lignes=[],varBase=[],hypotheses='',impType='fournisseur';
+let impFiles=null,pxType=null,ligneModal=null,bib=[],imports=[];
 
-/* ═══════════════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════════════ */
-function nav(id, el) {
-  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.nt').forEach(t => t.classList.remove('on'));
-  document.getElementById('pg-' + id).classList.add('on');
+/* NAV */
+function nav(id,el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
   el.classList.add('on');
-  if (id === 'bib') chargerBib();
+  if(id==='bib') chargerBib();
 }
 
-/* ═══════════════════════════════════════════════════
-   GÉNÉRATION DEVIS
-═══════════════════════════════════════════════════ */
-function setPill(s, el) {
-  style = s;
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
-  el.classList.add('on');
+/* DEVIS */
+function setPill(s,el){style=s;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');}
+
+async function generer(){
+  const txt=document.getElementById('saisie').value.trim();
+  if(!txt){toast('Décrivez les travaux.','err');return;}
+  const btn=document.getElementById('btn-gen'),icon=document.getElementById('bgi');
+  btn.disabled=true;icon.innerHTML='<span class="sp"></span>';
+  try{
+    const res=await post({action:'structurer',texte:txt,style});
+    if(res.error) throw new Error(res.error);
+    const nl=(res.lignes||[]).map(l=>({id:uid(),type:'ligne',lot:l.lot||'Divers',designation:l.designation||'',qte:l.quantite||null,unite:l.unite||'m²',pu:l.pu_ht||null,source:'ia',si:0,conf:l.confiance_prix||'faible'}));
+    if(!nl.length){toast('Aucune prestation extraite.','err');return;}
+    lignes=nl;varBase=cp(lignes);hypotheses=res.hypotheses||'';
+    document.getElementById('var-bar').style.display='flex';
+    document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));
+    document.querySelector('.vbtn').classList.add('on');
+    render();toast(`✔ ${nl.length} ligne${nl.length>1?'s':''} générée${nl.length>1?'s':''}.`,'ok');
+  }catch(e){toast('Erreur : '+e.message,'err');}
+  finally{btn.disabled=false;icon.innerHTML='✦';}
 }
 
-async function generer() {
-  const txt = document.getElementById('saisie').value.trim();
-  if (!txt) { toast('Décrivez les travaux.', 'err'); return; }
-  const btn = document.getElementById('btn-gen');
-  const icon = document.getElementById('bgi');
-  btn.disabled = true; icon.innerHTML = '<span class="sp"></span>';
-  try {
-    const res = await post({ action: 'structurer', texte: txt, style });
-    if (res.error) throw new Error(res.error);
-    const nouvelles = (res.lignes || []).map(l => ({
-      id: uid(), type: 'ligne',
-      lot: l.lot || 'Divers',
-      designation: l.designation || '',
-      qte: l.quantite || null,
-      unite: l.unite || 'm²',
-      pu: l.pu_ht || null,
-      source: 'ia', styleIdx: 0,
-      confiance: l.confiance_prix || 'faible'
-    }));
-    if (!nouvelles.length) { toast('Aucune prestation extraite.', 'err'); return; }
-    lignes = nouvelles;
-    varianteBase = JSON.parse(JSON.stringify(lignes));
-    hypotheses = res.hypotheses || '';
-    document.getElementById('variantes-row').style.display = 'flex';
-    document.querySelector('.on-var')?.classList.remove('on-var');
-    document.querySelector('[onclick*="standard"]')?.classList.add('on-var');
-    render(); toast(`✔ ${nouvelles.length} ligne${nouvelles.length > 1 ? 's' : ''} générée${nouvelles.length > 1 ? 's' : ''}.`, 'ok');
-  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
-  finally { btn.disabled = false; icon.innerHTML = '✦'; }
+function setVar(v,el){
+  document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  if(v==='eco') lignes=varBase.map(l=>({...l,id:uid(),pu:l.pu?Math.round(l.pu*.75*100)/100:null}));
+  else if(v==='premium') lignes=varBase.map(l=>({...l,id:uid(),pu:l.pu?Math.round(l.pu*1.35*100)/100:null}));
+  else lignes=cp(varBase);
+  render();toast(v==='eco'?'💚 Variante économique −25%':v==='premium'?'🟣 Premium +35%':'🔵 Standard','inf');
 }
 
-function setVariante(v, el) {
-  document.querySelectorAll('.on-var').forEach(b => b.classList.remove('on-var'));
-  el.classList.add('on-var');
-  if (v === 'eco') {
-    lignes = varianteBase.map(l => ({...l, id:uid(), pu: l.pu ? Math.round(l.pu * 0.75 * 100)/100 : null}));
-  } else if (v === 'premium') {
-    lignes = varianteBase.map(l => ({...l, id:uid(), pu: l.pu ? Math.round(l.pu * 1.35 * 100)/100 : null}));
-  } else {
-    lignes = JSON.parse(JSON.stringify(varianteBase));
-  }
-  render();
-  toast(v === 'eco' ? '💚 Variante économique −25%' : v === 'premium' ? '🟣 Variante premium +35%' : '🔵 Variante standard', 'inf');
-}
-
-function ouvrirHypo() {
-  if (!hypotheses) { toast('Aucune hypothèse enregistrée.', 'inf'); return; }
-  document.getElementById('hypo-content').innerHTML = hypotheses.replace(/\n/g, '<br>');
+function ouvrirHypo(){
+  if(!hypotheses){toast('Aucune hypothèse.','inf');return;}
+  document.getElementById('hypo-txt').innerHTML=hypotheses.replace(/\n/g,'<br>');
   om('md-hypo');
 }
 
-async function analyserFichierDevis(input) {
-  if (!input.files[0]) return;
-  const btn = document.getElementById('btn-gen');
-  btn.disabled = true;
-  toast('Analyse du fichier…', 'inf');
-  try {
-    const b64 = await toB64(input.files[0]);
-    const res = await post({ action: 'analyser_fichier', filename: input.files[0].name, data: b64, type: input.files[0].type });
-    if (res.error) throw new Error(res.error);
-    const nouvelles = (res.lignes || []).map(l => ({
-      id: uid(), type: 'ligne', lot: l.lot || 'Divers',
-      designation: l.designation || '', qte: l.quantite || null,
-      unite: l.unite || 'm²', pu: l.pu_ht || null, source: 'ia', styleIdx: 0, confiance: 'moyen'
-    }));
-    lignes = nouvelles; varianteBase = JSON.parse(JSON.stringify(lignes));
-    render(); toast(`✔ ${nouvelles.length} ligne${nouvelles.length > 1 ? 's' : ''} extraite${nouvelles.length > 1 ? 's' : ''}.`, 'ok');
-  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
-  finally { btn.disabled = false; input.value = ''; }
+async function analyserFichierDevis(inp){
+  if(!inp.files[0])return;
+  document.getElementById('btn-gen').disabled=true;
+  toast('Analyse du fichier…','inf');
+  try{
+    const b64=await b64f(inp.files[0]);
+    const res=await post({action:'analyser_fichier',filename:inp.files[0].name,data:b64,type:inp.files[0].type});
+    if(res.error) throw new Error(res.error);
+    lignes=(res.lignes||[]).map(l=>({id:uid(),type:'ligne',lot:l.lot||'Divers',designation:l.designation||'',qte:l.quantite||null,unite:l.unite||'m²',pu:l.pu_ht||null,source:'ia',si:0,conf:'moyen'}));
+    varBase=cp(lignes);render();toast(`✔ ${lignes.length} ligne${lignes.length>1?'s':''} extraite${lignes.length>1?'s':''}.`,'ok');
+  }catch(e){toast('Erreur : '+e.message,'err');}
+  finally{document.getElementById('btn-gen').disabled=false;inp.value='';}
 }
 
-/* ═══════════════════════════════════════════════════
-   RENDER TABLEAU
-═══════════════════════════════════════════════════ */
-function render() {
-  const tb = document.getElementById('tbody');
-  if (!lignes.length) {
-    tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:28px;color:#B0A89E;font-size:12.5px;">Décrivez les travaux ou importez un fichier</td></tr>';
-    majTot(); return;
-  }
-  tb.innerHTML = lignes.map((l, i) => renderLigne(l, i)).join('');
-  majTot();
+/* RENDER */
+function render(){
+  const tb=document.getElementById('tbody');
+  if(!lignes.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:32px;color:#B8B0A8;font-size:13px;">Décrivez les travaux ou importez un fichier</td></tr>';majTot();return;}
+  tb.innerHTML=lignes.map((l,i)=>rLigne(l,i)).join('');majTot();
 }
 
-function renderLigne(l, i) {
-  if (l.type === 'sep') return `
-    <tr class="sep" data-i="${i}">
-      <td colspan="8" ondblclick="editSep(${i})">${esc(l.lot)}</td>
-      <td class="c"><button class="ld" style="width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;font-size:11px;color:var(--RG);background:#FDECEA;" onclick="suppr(${i})">✕</button></td>
-    </tr>`;
-  const tot = calcTot(l);
-  const lopts = LOTS.map(lt => `<option${lt===l.lot?' selected':''}>${lt}</option>`).join('');
-  const uopts = UNITES.map(u => `<option${u===l.unite?' selected':''}>${u}</option>`).join('');
-  const src = l.source==='ia'?'<span class="bdg bi">IA</span>':l.source==='bib'?'<span class="bdg bh">BIB</span>':l.source==='marche'?'<span class="bdg bm">MKT</span>':l.source==='import'?'<span class="bdg bf">IMP</span>':'';
-  const cdot = l.confiance==='eleve'?'cg':l.confiance==='moyen'?'cy':'cr';
-  return `<tr data-i="${i}">
-    <td style="color:var(--TL);font-size:10.5px;text-align:center;"><span class="conf-dot ${cdot}"></span>${i+1}</td>
-    <td><select class="ci" style="width:98px;font-size:11px;" onchange="mj(${i},'lot',this.value)">${lopts}</select></td>
-    <td style="min-width:220px;max-width:300px;">
-      <div class="des-txt${!l.designation?' ph':''}" ondblclick="editDes(${i})" title="Double-clic pour modifier">
-        ${l.designation?esc(l.designation.substring(0,80))+(l.designation.length>80?'…':''):'Cliquer pour saisir…'}${src}
-      </div>
-    </td>
-    <td class="r"><input type="number" class="ci r" style="width:56px;" value="${l.qte!=null?l.qte:''}" placeholder="—" min="0" step="0.01" onchange="mj(${i},'qte',parseFloat(this.value)||null)"></td>
-    <td><select class="ci" style="width:66px;font-size:11px;" onchange="mj(${i},'unite',this.value)">${uopts}</select></td>
-    <td class="r"><input type="number" class="ci r" style="width:76px;" value="${l.pu!=null?l.pu:''}" placeholder="—" min="0" step="0.01" onchange="mj(${i},'pu',parseFloat(this.value)||null)"></td>
+function rLigne(l,i){
+  if(l.type==='sep') return`<tr class="sep" data-i="${i}"><td colspan="8" ondblclick="editSep(${i})">${esc(l.lot)}</td><td class="c"><button style="width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;background:#FDECEA;color:var(--RG);font-size:11px;" onclick="suppr(${i})">✕</button></td></tr>`;
+  const tot=cT(l);
+  const lo=LOTS.map(lt=>`<option${lt===l.lot?' selected':''}>${lt}</option>`).join('');
+  const uo=UNITES.map(u=>`<option${u===l.unite?' selected':''}>${u}</option>`).join('');
+  const src=l.source==='ia'?'<span class="bdg bi">IA</span>':l.source==='bib'?'<span class="bdg bh">BIB</span>':l.source==='marche'?'<span class="bdg bm">MKT</span>':l.source==='import'?'<span class="bdg bf">IMP</span>':'';
+  const cd=l.conf==='eleve'?'cg':l.conf==='moyen'?'cy':'cr';
+  return`<tr data-i="${i}">
+    <td style="text-align:center;"><span class="cd ${cd}"></span><span style="font-size:10px;color:var(--TL);">${i+1}</span></td>
+    <td><select class="ci" style="width:100px;font-size:11px;" onchange="mj(${i},'lot',this.value)">${lo}</select></td>
+    <td style="min-width:220px;max-width:300px;"><div class="des-txt${!l.designation?' ph':''}" ondblclick="editDes(${i})">${l.designation?esc(l.designation.substring(0,85))+(l.designation.length>85?'…':''):'Cliquer pour saisir…'}${src}</div></td>
+    <td class="r"><input type="number" class="ci r" style="width:54px;" value="${l.qte!=null?l.qte:''}" placeholder="—" min="0" step="0.01" onchange="mj(${i},'qte',parseFloat(this.value)||null)"></td>
+    <td><select class="ci" style="width:64px;font-size:11px;" onchange="mj(${i},'unite',this.value)">${uo}</select></td>
+    <td class="r"><input type="number" class="ci r" style="width:74px;" value="${l.pu!=null?l.pu:''}" placeholder="—" min="0" step="0.01" onchange="mj(${i},'pu',parseFloat(this.value)||null)"></td>
     <td class="r tc">${tot!=null?fmt(tot):'—'}</td>
-    <td class="c"><button class="lrg" style="width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;font-size:11px;background:var(--G);color:var(--M);" onclick="regenRapide(${i})" title="Régénérer libellé">↻</button></td>
+    <td class="c"><button style="width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;background:var(--G);color:var(--TL);font-size:11px;transition:all .12s;" onmouseover="this.style.background='var(--M)';this.style.color='#fff'" onmouseout="this.style.background='var(--G)';this.style.color='var(--TL)'" onclick="regenRapide(${i})" title="Régénérer">↻</button></td>
     <td class="c la">
-      <button class="le" onclick="ouvrirModal(${i})" title="Modifier">✏</button>
-      <button class="ld" onclick="suppr(${i})" title="Supprimer">✕</button>
+      <button class="le" style="background:var(--G);color:var(--TL);" onmouseover="this.style.background='var(--L)';this.style.color='#fff'" onmouseout="this.style.background='var(--G)';this.style.color='var(--TL)'" onclick="ouvrirModal(${i})" title="Modifier">✏</button>
+      <button class="ld" style="background:var(--G);color:var(--TL);" onmouseover="this.style.background='var(--RG)';this.style.color='#fff'" onmouseout="this.style.background='var(--G)';this.style.color='var(--TL)'" onclick="suppr(${i})" title="Supprimer">✕</button>
     </td>
   </tr>`;
 }
 
-function editDes(i) {
-  const row = document.querySelector(`tr[data-i="${i}"]`);
-  if (!row) return;
-  const td = row.querySelector('.des-txt').parentElement;
-  const v = lignes[i].designation || '';
-  const inp = document.createElement('input');
-  inp.type = 'text'; inp.className = 'ci'; inp.value = v;
-  inp.style.cssText = 'font-size:12.5px;';
-  inp.onblur = () => { lignes[i].designation = inp.value; lignes[i].source = ''; render(); };
-  inp.onkeydown = e => { if (e.key==='Enter'||e.key==='Escape') inp.blur(); };
-  td.innerHTML = ''; td.appendChild(inp); inp.focus();
+function editDes(i){
+  const row=document.querySelector(`tr[data-i="${i}"]`);if(!row)return;
+  const td=row.querySelector('.des-txt').parentElement;
+  const inp=document.createElement('input');inp.type='text';inp.className='ci';inp.value=lignes[i].designation||'';inp.style.cssText='font-size:13px;width:100%;';
+  inp.onblur=()=>{lignes[i].designation=inp.value;lignes[i].source='';render();};
+  inp.onkeydown=e=>{if(e.key==='Enter'||e.key==='Escape')inp.blur();};
+  td.innerHTML='';td.appendChild(inp);inp.focus();
 }
-
-function editSep(i) {
-  const row = document.querySelector(`tr[data-i="${i}"]`);
-  if (!row) return;
-  const td = row.querySelector('td');
-  const inp = document.createElement('input');
-  inp.type='text'; inp.className='ci'; inp.value = lignes[i].lot||'';
-  inp.style.cssText = 'background:transparent;border-color:rgba(255,255,255,.4);color:#fff;font-size:11px;';
-  inp.onblur = () => { lignes[i].lot = inp.value; render(); };
-  inp.onkeydown = e => { if(e.key==='Enter'||e.key==='Escape') inp.blur(); };
-  td.innerHTML=''; td.appendChild(inp); inp.focus();
+function editSep(i){
+  const row=document.querySelector(`tr[data-i="${i}"]`);if(!row)return;
+  const td=row.querySelector('td');
+  const inp=document.createElement('input');inp.type='text';inp.className='ci';inp.value=lignes[i].lot||'';
+  inp.style.cssText='background:transparent;border-color:var(--M);font-size:11px;font-weight:700;text-transform:uppercase;width:100%;';
+  inp.onblur=()=>{lignes[i].lot=inp.value;render();};
+  inp.onkeydown=e=>{if(e.key==='Enter'||e.key==='Escape')inp.blur();};
+  td.innerHTML='';td.appendChild(inp);inp.focus();
 }
-
-function mj(i, k, v) {
-  lignes[i][k] = v;
-  const row = document.querySelector(`tr[data-i="${i}"]`);
-  if (row) { const t=calcTot(lignes[i]); const tc=row.querySelector('.tc'); if(tc) tc.textContent=t!=null?fmt(t):'—'; }
+function mj(i,k,v){
+  lignes[i][k]=v;
+  const row=document.querySelector(`tr[data-i="${i}"]`);
+  if(row){const t=cT(lignes[i]);const tc=row.querySelector('.tc');if(tc)tc.textContent=t!=null?fmt(t):'—';}
   majTot();
 }
+function suppr(i){if(confirm('Supprimer cette ligne ?')){lignes.splice(i,1);render();}}
+function ajouterLigne(){lignes.push({id:uid(),type:'ligne',lot:'Divers',designation:'',qte:null,unite:'m²',pu:null,source:'',si:0,conf:'faible'});render();setTimeout(()=>{const rows=document.querySelectorAll('#tbody tr');const last=rows[rows.length-1];if(last){last.scrollIntoView({block:'nearest'});const d=last.querySelector('.des-txt');if(d)d.dispatchEvent(new MouseEvent('dblclick'));}},60);}
+function ajouterSep(){lignes.push({id:uid(),type:'sep',lot:'Nouveau lot'});render();}
+function vider(){if(!lignes.length||confirm('Vider le devis ?')){lignes=[];varBase=[];document.getElementById('var-bar').style.display='none';render();}}
 
-function suppr(i) { if(confirm('Supprimer ?')){ lignes.splice(i,1); render(); } }
-function ajouterLigne() {
-  lignes.push({id:uid(),type:'ligne',lot:'Divers',designation:'',qte:null,unite:'m²',pu:null,source:'',styleIdx:0,confiance:'faible'});
-  render();
-  setTimeout(()=>{ const rows=document.querySelectorAll('#tbody tr'); const last=rows[rows.length-1]; if(last){last.scrollIntoView({block:'nearest'}); const d=last.querySelector('.des-txt'); if(d) d.dispatchEvent(new MouseEvent('dblclick')); } },60);
-}
-function ajouterSep() { lignes.push({id:uid(),type:'sep',lot:'Nouveau lot'}); render(); }
-function vider() { if(!lignes.length||confirm('Vider le devis ?')){ lignes=[]; varianteBase=[]; document.getElementById('variantes-row').style.display='none'; render(); } }
-
-async function regenRapide(i) {
-  const l = lignes[i];
-  if (!l.designation) return;
-  l.styleIdx = ((l.styleIdx||0)+1) % STYLES_CYCLE.length;
-  const s = STYLES_CYCLE[l.styleIdx];
-  try {
-    const res = await post({action:'generate',prestation:l.designation,style:s});
-    if(res.error) throw new Error(res.error);
-    l.designation = res.libelle || l.designation;
-    if(res.prix_bas && l.pu==null) l.pu = res.prix_bas;
-    l.source='ia'; render(); toast(`Style ${s}.`,'inf');
-  } catch(e) { toast('Erreur : '+e.message,'err'); }
+async function regenRapide(i){
+  const l=lignes[i];if(!l.designation)return;
+  l.si=((l.si||0)+1)%SC.length;const s=SC[l.si];
+  try{const res=await post({action:'generate',prestation:l.designation,style:s});if(res.error)throw new Error(res.error);l.designation=res.libelle||l.designation;if(res.prix_bas&&l.pu==null)l.pu=res.prix_bas;l.source='ia';render();toast(`Style ${s}.`,'inf');}
+  catch(e){toast('Erreur : '+e.message,'err');}
 }
 
-/* ═══════════════════════════════════════════════════
-   TOTAUX
-═══════════════════════════════════════════════════ */
-function calcTot(l) {
-  if(l.type==='sep') return null;
-  if(l.qte!=null&&l.pu!=null) return Math.round(l.qte*l.pu*100)/100;
-  return null;
-}
-function calcHT() { return lignes.reduce((a,l)=>a+(calcTot(l)||0),0); }
-function majTot() {
-  const ht=calcHT(), tvaAmt=Math.round(ht*tva)/100, ttc=Math.round((ht+tvaAmt)*100)/100;
+/* TOTAUX */
+function cT(l){if(l.type==='sep')return null;if(l.qte!=null&&l.pu!=null)return Math.round(l.qte*l.pu*100)/100;return null;}
+function cHT(){return lignes.reduce((a,l)=>a+(cT(l)||0),0);}
+function majTot(){
+  const ht=cHT(),tv=Math.round(ht*tva)/100,ttc=Math.round((ht+tv)*100)/100;
   document.getElementById('t-ht').textContent=fmt(ht);
-  document.getElementById('t-tva').textContent=fmt(tvaAmt);
+  document.getElementById('t-tva').textContent=fmt(tv);
   document.getElementById('t-ttc').textContent=fmt(ttc);
   document.getElementById('t-tva-lbl').textContent=tva===0?'Exonéré TVA':`TVA ${tva}%`;
 }
-function setTVA(t, el) {
-  tva=t;
-  document.querySelectorAll('.tvab').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on'); majTot();
-}
+function setTVA(t,el){tva=t;document.querySelectorAll('.tvab').forEach(b=>b.classList.remove('on'));el.classList.add('on');majTot();}
 
-/* ═══════════════════════════════════════════════════
-   OPTIMISER IA
-═══════════════════════════════════════════════════ */
-async function optimiserIA() {
+/* OPTIMISER */
+async function optimiserIA(){
   if(!lignes.length){toast('Devis vide.','err');return;}
-  const btn=document.getElementById('btn-opt');
-  btn.disabled=true; btn.innerHTML='<span class="sp"></span> IA…';
-  try {
-    const res = await post({action:'optimiserdevis',lignes});
-    if(res.error) throw new Error(res.error);
-    const sugs = res.suggestions||[];
-    if(!sugs.length){toast('Aucune suggestion — devis déjà optimal !','inf');return;}
-    sugs.forEach(s=>{
-      const idx=s.ligne_index;
-      if(idx!=null&&idx<lignes.length){
-        if(s.nouveau_libelle) lignes[idx].designation=s.nouveau_libelle;
-        if(s.prix) lignes[idx].pu=s.prix;
-      }
-    });
-    render(); toast(`${sugs.length} amélioration${sugs.length>1?'s':''} appliquée${sugs.length>1?'s':''}.`,'ok');
-  } catch(e){toast('Erreur : '+e.message,'err');}
-  finally{btn.disabled=false;btn.innerHTML='✦ Optimiser IA';}
+  const btn=document.getElementById('btn-opt');btn.innerHTML='<span class="sp"></span>';btn.style.opacity='.7';
+  try{const res=await post({action:'optimiserdevis',lignes});if(res.error)throw new Error(res.error);const s=res.suggestions||[];if(!s.length){toast('Aucune suggestion !','inf');return;}s.forEach(sg=>{const idx=sg.ligne_index;if(idx!=null&&idx<lignes.length){if(sg.nouveau_libelle)lignes[idx].designation=sg.nouveau_libelle;if(sg.prix)lignes[idx].pu=sg.prix;}});render();toast(`${s.length} amélioration${s.length>1?'s':''} appliquée${s.length>1?'s':''}.`,'ok');}
+  catch(e){toast('Erreur : '+e.message,'err');}
+  finally{btn.innerHTML='✦ Optimiser';btn.style.opacity='';}
 }
 
-/* ═══════════════════════════════════════════════════
-   COPIER EMAIL
-═══════════════════════════════════════════════════ */
-function copierEmail() {
+/* EMAIL */
+function copierEmail(){
   if(!lignes.length){toast('Devis vide.','err');return;}
   let t='DEVIS AB RENOV 35\n'+'─'.repeat(40)+'\n\n';
-  lignes.forEach(l=>{
-    if(l.type==='sep'){t+=`\n${(l.lot||'LOT').toUpperCase()}\n`;return;}
-    const tot=calcTot(l);
-    t+=`- ${l.designation||'(sans désignation)'}\n`;
-    if(l.qte!=null||l.pu!=null) t+=`  ${l.qte!=null?l.qte+' '+l.unite:''}${l.pu!=null?' × '+l.pu+' €':''}${tot!=null?' = '+fmt(tot)+' HT':''}\n`;
-  });
-  const ht=calcHT(),tvaAmt=Math.round(ht*tva)/100;
-  t+='\n'+'─'.repeat(40)+'\n';
-  t+=`Sous-total HT : ${fmt(ht)}\n`;
-  if(tva>0) t+=`TVA ${tva}% : ${fmt(tvaAmt)}\n`;
-  t+=`TOTAL TTC : ${fmt(ht+tvaAmt)}\n`;
-  t+='\nDevis valable 3 mois.\nAB RENOV 35\n';
-  navigator.clipboard.writeText(t).then(()=>toast('✔ Copié pour email !','ok'));
+  lignes.forEach(l=>{if(l.type==='sep'){t+=`\n${(l.lot||'LOT').toUpperCase()}\n`;return;}const tot=cT(l);t+=`- ${l.designation||'(sans désignation)'}\n`;if(l.qte!=null||l.pu!=null)t+=`  ${l.qte!=null?l.qte+' '+l.unite:''}${l.pu!=null?' × '+l.pu+' €':''}${tot!=null?' = '+fmt(tot)+' HT':''}\n`;});
+  const ht=cHT(),tv=Math.round(ht*tva)/100;
+  t+='\n'+'─'.repeat(40)+'\nSous-total HT : '+fmt(ht)+'\n'+(tva>0?`TVA ${tva}% : ${fmt(tv)}\n`:'')+`TOTAL TTC : ${fmt(ht+tv)}\n\nDevis valable 3 mois.\nAB RENOV 35\n`;
+  navigator.clipboard.writeText(t).then(()=>toast('✔ Copié !','ok'));
 }
 
-/* ═══════════════════════════════════════════════════
-   EXPORT EXCEL VERTUOZA
-═══════════════════════════════════════════════════ */
-function exportVertuoza() {
+/* EXPORT VERTUOZA */
+function exportVertuoza(){
   if(!lignes.length){toast('Devis vide.','err');return;}
-  const ht=calcHT(), tvaAmt=Math.round(ht*tva)/100, ttc=Math.round((ht+tvaAmt)*100)/100;
-  const rows=[
-    ['Référence','Lot','Désignation','Quantité','Unité','Prix unitaire HT','TVA %','Total HT']
-  ];
+  const ht=cHT(),tv=Math.round(ht*tva)/100,ttc=Math.round((ht+tv)*100)/100;
+  const rows=[['Référence','Lot','Désignation','Quantité','Unité','P.U. HT €','TVA %','Total HT €']];
   lignes.forEach((l,i)=>{
-    if(l.type==='sep'){
-      rows.push(['',l.lot||'','─── '+esc(l.lot||'LOT')+' ───','','','','','']);
-      return;
-    }
-    const tot=calcTot(l)||'';
-    rows.push([
-      'REF-'+(i+1).toString().padStart(3,'0'),
-      l.lot||'',
-      l.designation||'',
-      l.qte!=null?l.qte:'',
-      l.unite||'m²',
-      l.pu!=null?l.pu:'',
-      tva,
-      tot
-    ]);
+    if(l.type==='sep'){rows.push(['','',`── ${l.lot||'LOT'} ──`,'','','','','']);return;}
+    rows.push(['REF-'+(i+1).toString().padStart(3,'0'),l.lot||'',l.designation||'',l.qte!=null?l.qte:'',l.unite||'m²',l.pu!=null?l.pu:'',tva,cT(l)||'']);
   });
-  // Ligne vide puis totaux
-  rows.push([]);
-  rows.push(['','','','','','Sous-total HT','',ht]);
-  rows.push(['','','','','',`TVA ${tva}%`,'',tvaAmt]);
-  rows.push(['','','','','','TOTAL TTC','',ttc]);
-
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  // Largeurs colonnes
-  ws['!cols']=[{wch:12},{wch:14},{wch:55},{wch:10},{wch:10},{wch:16},{wch:8},{wch:14}];
-  // Style en-tête (couleur)
-  const range = XLSX.utils.decode_range(ws['!ref']);
-  for(let C=range.s.c;C<=range.e.c;C++){
-    const addr=XLSX.utils.encode_cell({r:0,c:C});
-    if(!ws[addr]) continue;
-    ws[addr].s={fill:{fgColor:{rgb:'162D49'}},font:{color:{rgb:'FFFFFF'},bold:true}};
-  }
-  const wb = XLSX.utils.book_new();
+  rows.push([],[],[],['','','','','','Sous-total HT','',ht],['','','','','',`TVA ${tva}%`,'',tv],['','','','','','TOTAL TTC','',ttc]);
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:12},{wch:14},{wch:55},{wch:10},{wch:10},{wch:14},{wch:8},{wch:14}];
+  const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,'Devis AB RENOV 35',ws);
   const d=new Date();
-  const fname=`DEVIS_ABRENOV35_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.xlsx`;
-  XLSX.writeFile(wb,fname);
-  toast('✔ Fichier Excel téléchargé !','ok');
+  XLSX.writeFile(wb,`DEVIS_ABRENOV35_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.xlsx`);
+  toast('✔ Excel téléchargé !','ok');
 }
 
-/* ═══════════════════════════════════════════════════
-   MODAL LIGNE
-═══════════════════════════════════════════════════ */
-function ouvrirModal(i) {
-  ligneModal=i;
-  const l=lignes[i];
+/* MODAL LIGNE */
+function ouvrirModal(i){
+  ligneModal=i;const l=lignes[i];
   document.getElementById('ll-des').value=l.designation||'';
   document.getElementById('ll-qte').value=l.qte!=null?l.qte:'';
   document.getElementById('ll-uni').value=l.unite||'m²';
   document.getElementById('ll-pu').value=l.pu!=null?l.pu:'';
   document.getElementById('ll-tot').value='';
   document.getElementById('ll-lot').value=l.lot||'Divers';
-  document.getElementById('ll-bib-q').value='';
-  document.getElementById('ll-bib-res').innerHTML='';
+  document.getElementById('ll-bq').value='';
+  document.getElementById('ll-br').innerHTML='';
   om('md-ligne');
 }
-
-function appliquerLigne() {
-  if(ligneModal===null) return;
+function appLigne(){
+  if(ligneModal===null)return;
   const l=lignes[ligneModal];
   l.designation=document.getElementById('ll-des').value;
   l.qte=parseFloat(document.getElementById('ll-qte').value)||null;
@@ -819,284 +779,126 @@ function appliquerLigne() {
   l.lot=document.getElementById('ll-lot').value;
   const tm=parseFloat(document.getElementById('ll-tot').value);
   if(!isNaN(tm)&&tm>0&&l.pu==null){l.qte=1;l.unite='forfait';l.pu=tm;}
-  render(); fm('md-ligne'); toast('Ligne mise à jour.','ok');
+  render();fm('md-ligne');toast('Ligne mise à jour.','ok');
 }
-
-async function regenLigneModal(s) {
-  const des=document.getElementById('ll-des').value.trim()||(ligneModal!==null?lignes[ligneModal].designation:'');
+async function regenModal(s){
+  const des=document.getElementById('ll-des').value.trim()||(ligneModal!=null?lignes[ligneModal].designation:'');
   if(!des){toast('Aucune désignation.','err');return;}
-  const btn=event.target; btn.disabled=true; btn.textContent='…';
-  try {
-    const res=await post({action:'generate',prestation:des,style:s});
-    if(res.error) throw new Error(res.error);
-    document.getElementById('ll-des').value=res.libelle||des;
-    if(res.prix_bas&&!document.getElementById('ll-pu').value) document.getElementById('ll-pu').value=res.prix_bas;
-    if(res.unite) document.getElementById('ll-uni').value=res.unite;
-    toast(`Régénéré (${s}).`,'ok');
-  } catch(e){toast('Erreur : '+e.message,'err');}
+  const btn=event.target;btn.disabled=true;btn.textContent='…';
+  try{const res=await post({action:'generate',prestation:des,style:s});if(res.error)throw new Error(res.error);document.getElementById('ll-des').value=res.libelle||des;if(res.prix_bas&&!document.getElementById('ll-pu').value)document.getElementById('ll-pu').value=res.prix_bas;if(res.unite)document.getElementById('ll-uni').value=res.unite;toast(`Régénéré (${s}).`,'ok');}
+  catch(e){toast('Erreur : '+e.message,'err');}
   finally{btn.disabled=false;btn.textContent=s;}
 }
-
-function rechBib() {
-  const q=document.getElementById('ll-bib-q').value.trim().toLowerCase();
-  if(!q) return;
-  const r=bibliotheque.filter(l=>(l.prestation||'').toLowerCase().includes(q)||(l.libelle||'').toLowerCase().includes(q)).slice(0,5);
-  const c=document.getElementById('ll-bib-res');
-  if(!r.length){c.innerHTML='<p style="font-size:11.5px;color:var(--TL);">Aucun résultat.</p>';return;}
-  c.innerHTML=r.map(l=>`<div style="background:#fff;border-radius:5px;padding:7px 10px;border:1px solid #E8DED6;cursor:pointer;font-size:12px;" onclick="selBib('${esc(l.id||'')}')">
-    <strong style="color:var(--M);font-size:11px;">${esc(l.prestation||'')}</strong><br>
-    <span style="font-style:italic;color:var(--TL);">${esc((l.libelle||'').substring(0,70))}…</span>
-    ${l.prix_bas?`<span style="float:right;font-weight:600;color:var(--M);">${l.prix_bas}€</span>`:''}
-  </div>`).join('');
+function rechBib2(){
+  const q=document.getElementById('ll-bq').value.trim().toLowerCase();if(!q)return;
+  const r=bib.filter(l=>(l.prestation||'').toLowerCase().includes(q)||(l.libelle||'').toLowerCase().includes(q)).slice(0,5);
+  const c=document.getElementById('ll-br');
+  if(!r.length){c.innerHTML='<p style="font-size:12px;color:var(--TL);">Aucun résultat.</p>';return;}
+  c.innerHTML=r.map(l=>`<div style="background:var(--W);border-radius:5px;padding:7px 10px;border:1px solid var(--G);cursor:pointer;font-size:12px;" onclick="selBib2('${esc(l.id||'')}')"><strong style="color:var(--M);font-size:11px;">${esc(l.prestation||'')}</strong><br><span style="font-style:italic;color:var(--TL);">${esc((l.libelle||'').substring(0,70))}…</span>${l.prix_bas?`<span style="float:right;font-weight:600;color:var(--M);">${l.prix_bas}€</span>`:''}</div>`).join('');
 }
-
-function selBib(id) {
-  const l=bibliotheque.find(x=>x.id==id);
-  if(!l) return;
+function selBib2(id){
+  const l=bib.find(x=>x.id==id);if(!l)return;
   document.getElementById('ll-des').value=l.libelle||'';
   document.getElementById('ll-uni').value=l.unite||'m²';
-  if(l.prix_abrenov) document.getElementById('ll-pu').value=l.prix_abrenov;
-  else if(l.prix_bas) document.getElementById('ll-pu').value=l.prix_bas;
-  if(ligneModal!==null) lignes[ligneModal].source='bib';
-  document.getElementById('ll-bib-res').innerHTML='';
+  if(l.prix_abrenov)document.getElementById('ll-pu').value=l.prix_abrenov;
+  else if(l.prix_bas)document.getElementById('ll-pu').value=l.prix_bas;
+  if(ligneModal!=null)lignes[ligneModal].source='bib';
+  document.getElementById('ll-br').innerHTML='';
   toast('Libellé sélectionné.','ok');
 }
-
-async function appPrixMarche() {
-  const des=document.getElementById('ll-des').value.trim();
-  if(!des) return;
-  try {
-    const res=await get('listprix');
-    const prix=(res.prix||[]);
-    const desN=des.toLowerCase();
-    const m=prix.find(p=>(p.prestation||'').toLowerCase().split(' ').some(w=>w.length>3&&desN.includes(w)));
-    if(m&&m.prix_bas){
-      document.getElementById('ll-pu').value=m.prix_bas;
-      if(m.unite) document.getElementById('ll-uni').value=m.unite;
-      if(ligneModal!==null) lignes[ligneModal].source='marche';
-      toast(`Prix marché : ${m.prix_bas}€/${m.unite}.`,'ok');
-    } else { toast('Aucun prix marché trouvé.','inf'); }
-  } catch(e){toast('Erreur : '+e.message,'err');}
-}
-
-/* ═══════════════════════════════════════════════════
-   PAGE BASE MÉTIER
-═══════════════════════════════════════════════════ */
-const TYPE_LABELS={fournisseur:'Factures fournisseurs · PDF, JPG, Excel, CSV',catalogue:'Bases prix CSV/Excel · catalogues fournisseurs',devis_ab:'Vos devis et factures AB RENOV 35 · PDF, Word, Excel',chantier:'Factures chantier, bons livraison · PDF, JPG',divers:'Tout document · l\'IA classifie automatiquement'};
-
-function selType(t, el) {
-  importType=t;
-  document.querySelectorAll('.utype').forEach(u=>u.classList.remove('sel'));
-  el.classList.add('sel');
-  document.getElementById('drop-type-hint').textContent=TYPE_LABELS[t]||'';
-}
-
-function ev(e){e.preventDefault();document.getElementById('dropzone').classList.add('over');}
-function drop(e){e.preventDefault();document.getElementById('dropzone').classList.remove('over');analyserBase(e.dataTransfer.files);}
-
-async function analyserBase(files) {
-  if(!files||!files.length) return;
-  importFiles=files;
-  // Si fournisseur ou catalogue → demander type de prix
-  if(importType==='fournisseur'||importType==='catalogue'){
-    om('md-prix-type'); return;
-  }
-  lancerAnalyse(null, null);
-}
-
-function setPrixType(type) {
-  prixTypeChoisi=type;
-  document.getElementById('pt-pub').style.borderColor=type==='public'?'var(--M)':'#D8CFC8';
-  document.getElementById('pt-pro').style.borderColor=type==='pro'?'var(--M)':'#D8CFC8';
-  document.getElementById('marge-row').style.display=type==='pro'?'block':'none';
-}
-
-async function continuerAnalyse() {
-  if(!prixTypeChoisi){toast('Choisissez public ou pro.','err');return;}
-  const marge=prixTypeChoisi==='pro'?parseFloat(document.getElementById('marge-val').value)||35:0;
-  fm('md-prix-type');
-  lancerAnalyse(prixTypeChoisi, marge);
-}
-
-async function lancerAnalyse(prixType, marge) {
-  const dz=document.getElementById('dropzone');
-  dz.innerHTML='<div class="drop-icon">⏳</div><div class="drop-title">Analyse en cours…</div><div class="drop-sub">Extraction des données par IA</div>';
-  const rapport=document.getElementById('rapport');
-  rapport.classList.remove('on');
-  try {
-    const file=importFiles[0];
-    const b64=await toB64(file);
-    const res=await post({
-      action:'analyser_document',
-      filename:file.name, data:b64, type:file.type,
-      doc_type:importType, prix_type:prixType, marge
-    });
-    if(res.error) throw new Error(res.error);
-    afficherRapport(res, file.name);
-    // Ajouter à l'historique local
-    const imp={id:uid(),date:new Date().toLocaleDateString('fr-FR'),fichier:file.name,type:importType,fournisseur:res.fournisseur||'—',lignes:res.nb_lignes||0,confiance:res.confiance||50,statut:'à vérifier',data:res};
-    imports.unshift(imp); renderImports();
-    toast('Analyse terminée — validez ou rejetez.','ok');
-  } catch(e){toast('Erreur : '+e.message,'err');}
-  finally {
-    dz.innerHTML=`<input type="file" id="file-base" accept=".pdf,.jpg,.jpeg,.png,.webp,.xls,.xlsx,.csv,.doc,.docx" multiple style="display:none" onchange="analyserBase(this.files)">
-      <div class="drop-icon">📄</div><div class="drop-title">Déposer vos documents ici ou cliquer pour parcourir</div>
-      <div class="drop-sub" id="drop-type-hint">${TYPE_LABELS[importType]||''}</div>`;
-    dz.onclick=()=>document.getElementById('file-base').click();
-  }
-}
-
-function afficherRapport(res, filename) {
-  const rp=document.getElementById('rapport');
-  document.getElementById('rap-titre').textContent=`Analyse : ${filename}`;
-  const g=document.getElementById('rap-grid');
-  const nb=res.nb_lignes||0, conf=res.confiance||0;
-  const nbNew=res.nb_nouveaux||0, nbUpd=res.nb_mis_a_jour||0, nbDbl=res.nb_doublons||0, nbInc=res.nb_incertains||0;
-  g.innerHTML=`
-    <div class="rap-item rap-ok"><div class="rap-item-title">✅ Lignes extraites</div><div class="rap-item-val">${nb}</div><div class="rap-item-detail">données reconnues avec confiance</div></div>
-    <div class="rap-item rap-new"><div class="rap-item-title">🆕 Prix nouveaux</div><div class="rap-item-val">${nbNew}</div><div class="rap-item-detail">absents de la base actuelle</div></div>
-    <div class="rap-item ${nbUpd>0?'rap-ok':'rap-warn'}"><div class="rap-item-title">📈 Prix mis à jour</div><div class="rap-item-val">${nbUpd}</div><div class="rap-item-detail">valeurs modifiées vs base actuelle</div></div>
-    <div class="rap-item ${nbDbl>0?'rap-warn':'rap-ok'}"><div class="rap-item-title">🔁 Doublons</div><div class="rap-item-val">${nbDbl}</div><div class="rap-item-detail">déjà présents en base</div></div>
-    <div class="rap-item ${nbInc>0?'rap-alert':'rap-ok'}"><div class="rap-item-title">⚠️ Incertains</div><div class="rap-item-val">${nbInc}</div><div class="rap-item-detail">à vérifier manuellement</div></div>
-    <div class="rap-item ${conf>=70?'rap-ok':conf>=40?'rap-warn':'rap-alert'}"><div class="rap-item-title">🎯 Confiance</div><div class="rap-item-val">${conf}%</div><div class="rap-item-detail">${conf>=70?'Fiabilité élevée':conf>=40?'Fiabilité moyenne':'Fiabilité faible'}</div></div>`;
-  const lines=res.lignes||[];
-  document.getElementById('rap-lines').innerHTML=lines.slice(0,15).map(l=>`
-    <div style="background:var(--G);border-radius:5px;padding:7px 10px;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <span style="flex:1;color:var(--T);">${esc(l.designation||l.prestation||'')}</span>
-      <span style="color:var(--TL);white-space:nowrap;">${l.unite||'m²'}</span>
-      <span style="font-weight:600;color:var(--M);white-space:nowrap;">${l.pu_ht||l.prix||'?'} €</span>
-    </div>`).join('')+(lines.length>15?`<div style="text-align:center;font-size:11.5px;color:var(--TL);padding:6px;">+${lines.length-15} autres lignes…</div>`:'');
-  rp.classList.add('on');
-  rp._data=res;
-}
-
-async function validerImport() {
-  const rp=document.getElementById('rapport');
-  if(!rp._data){toast('Aucune donnée à valider.','err');return;}
-  const btn=document.getElementById('btn-valider-import');
-  btn.disabled=true; btn.innerHTML='<span class="sp"></span>';
-  try {
-    const res=await post({action:'valider_import',data:rp._data});
-    if(res.error) throw new Error(res.error);
-    const i=imports.findIndex(x=>x.data===rp._data);
-    if(i>=0) imports[i].statut='validé';
-    renderImports();
-    rp.classList.remove('on'); rp._data=null;
-    toast(`✔ ${res.nb_integres||0} ligne${(res.nb_integres||0)>1?'s':''} intégrée${(res.nb_integres||0)>1?'s':''} dans la base.`,'ok');
-  } catch(e){toast('Erreur : '+e.message,'err');}
-  finally{btn.disabled=false;btn.innerHTML='✔ Valider et intégrer';}
-}
-
-function rejeterImport() {
-  const rp=document.getElementById('rapport');
-  const i=imports.findIndex(x=>x.data===rp._data);
-  if(i>=0) imports[i].statut='rejeté';
-  renderImports(); rp.classList.remove('on'); rp._data=null;
-  toast('Import rejeté.','inf');
-}
-
-function renderImports() {
-  document.getElementById('imp-count').textContent=`${imports.length} document${imports.length>1?'s':''}`;
-  if(!imports.length){
-    document.getElementById('imports-tbody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--TL);font-size:12px;">Aucun import</td></tr>';
-    return;
-  }
-  const stCls={validé:'st-v','à vérifier':'st-w',rejeté:'st-r'};
-  const typeLbl={fournisseur:'Facture fourn.',catalogue:'Base prix',devis_ab:'Devis AB',chantier:'Chantier',divers:'Divers'};
-  document.getElementById('imports-tbody').innerHTML=imports.map(im=>`
-    <tr>
-      <td>${im.date}</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(im.fichier)}">${esc(im.fichier)}</td>
-      <td>${typeLbl[im.type]||im.type}</td>
-      <td>${esc(im.fournisseur)}</td>
-      <td class="r">${im.lignes}</td>
-      <td>${im.confiance}%</td>
-      <td><span class="st ${stCls[im.statut]||'st-w'}">${im.statut}</span></td>
-      <td><button class="btn br bxs" onclick="supprimerImport('${im.id}')">✕</button></td>
-    </tr>`).join('');
-}
-
-function supprimerImport(id){imports=imports.filter(i=>i.id!==id);renderImports();}
-
-/* ═══════════════════════════════════════════════════
-   BIBLIOTHÈQUE
-═══════════════════════════════════════════════════ */
-async function chargerBib() {
-  const grid=document.getElementById('bib-grid');
-  grid.innerHTML='<div class="empty"><span style="font-size:24px;">⏳</span><span>Chargement…</span></div>';
-  try {
-    const res=await get('list');
-    if(res.error) throw new Error(res.error);
-    bibliotheque=(res.libelles||[]).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
-    filtrerBib();
-  } catch(e){ grid.innerHTML=`<div class="empty"><span>❌ ${esc(e.message)}</span></div>`; }
-}
-
-function filtrerBib() {
-  const q=document.getElementById('bib-search').value.toLowerCase().trim();
-  const f=q?bibliotheque.filter(l=>(l.prestation||'').toLowerCase().includes(q)||(l.libelle||'').toLowerCase().includes(q)):bibliotheque;
-  document.getElementById('bib-count').textContent=`${f.length} libellé${f.length!==1?'s':''}`;
-  if(!f.length){document.getElementById('bib-grid').innerHTML='<div class="empty"><span style="font-size:24px;">🔍</span><span>Aucun résultat</span></div>';return;}
-  document.getElementById('bib-grid').innerHTML=f.map(l=>{
-    const d=l.date?new Date(l.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';
-    const p=l.prix_bas&&l.prix_haut?`${l.prix_bas}–${l.prix_haut}€/${l.unite||'m²'}`:l.prix_bas?`${l.prix_bas}€/${l.unite||'m²'}`:null;
-    return `<div class="bib-card">
-      <div>
-        <div class="bc-top"><div class="bc-pre">${esc(l.prestation||'')}</div><span class="bc-tag">${esc(l.unite||'m²')}</span></div>
-        <div class="bc-lib">${esc(l.libelle||'')}</div>
-        <div class="bc-meta">${p?`<span class="bc-prix">💰 ${esc(p)}</span>`:''}${l.prix_abrenov?`<span class="bc-prix">AB: ${l.prix_abrenov}€</span>`:''}<span>📅 ${d}</span></div>
-      </div>
-      <div class="bc-acts">
-        <button class="btn bs bxs" onclick="copierBib('${esc(l.id||'')}')">⎘</button>
-        <button class="btn bl bxs" onclick="libVersDevis('${esc(l.id||'')}')">→ Devis</button>
-        <button class="btn br bxs" onclick="suppBib('${esc(l.id||'')}')">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function copierBib(id){const l=bibliotheque.find(x=>x.id==id);if(!l)return;navigator.clipboard.writeText(l.libelle||'').then(()=>toast('Copié !','ok'));}
-function libVersDevis(id){
-  const l=bibliotheque.find(x=>x.id==id);if(!l)return;
-  lignes.push({id:uid(),type:'ligne',lot:'Divers',designation:l.libelle||'',qte:null,unite:l.unite||'m²',pu:l.prix_abrenov||l.prix_bas||null,source:'bib',styleIdx:0,confiance:'eleve'});
-  nav('devis',document.querySelector('.nt')); render(); toast('Ajouté au devis.','ok');
-}
-async function suppBib(id){
-  if(!confirm('Supprimer ?'))return;
-  try{const res=await post({action:'delete',id});if(res.error)throw new Error(res.error);bibliotheque=bibliotheque.filter(x=>x.id!=id);filtrerBib();toast('Supprimé.','inf');}
+async function appPrixMarche(){
+  const des=document.getElementById('ll-des').value.trim();if(!des)return;
+  try{const res=await get('listprix');const prix=res.prix||[];const dn=des.toLowerCase();const m=prix.find(p=>(p.prestation||'').toLowerCase().split(' ').some(w=>w.length>3&&dn.includes(w)));if(m&&m.prix_bas){document.getElementById('ll-pu').value=m.prix_bas;if(m.unite)document.getElementById('ll-uni').value=m.unite;if(ligneModal!=null)lignes[ligneModal].source='marche';toast(`Prix marché : ${m.prix_bas}€/${m.unite}.`,'ok');}else{toast('Aucun prix marché trouvé.','inf');}}
   catch(e){toast('Erreur : '+e.message,'err');}
 }
 
-/* ═══════════════════════════════════════════════════
-   FETCH HELPERS
-═══════════════════════════════════════════════════ */
-async function post(body){
-  const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  return r.json();
+/* BASE MÉTIER */
+const TH={'fournisseur':'Factures fournisseurs · PDF, JPG, Excel, CSV','catalogue':'Bases prix CSV/Excel · catalogues fournisseurs','devis_ab':'Vos devis et factures AB RENOV 35 · PDF, Word, Excel','chantier':'Factures chantier, bons livraison · PDF, JPG','divers':'Tout document · l\'IA classifie automatiquement'};
+function selType(t,el){impType=t;document.querySelectorAll('.utype').forEach(u=>u.classList.remove('sel'));el.classList.add('sel');document.getElementById('drop-hint').textContent=TH[t]||'';}
+function ev(e){e.preventDefault();document.getElementById('dropzone').classList.add('over');}
+function drop(e){e.preventDefault();document.getElementById('dropzone').classList.remove('over');analyserBase(e.dataTransfer.files);}
+async function analyserBase(files){if(!files||!files.length)return;impFiles=files;if(impType==='fournisseur'||impType==='catalogue'){om('md-pxt');return;}lancerAnalyse(null,null);}
+function setPT(t){pxType=t;document.getElementById('pt-pub').style.borderColor=t==='public'?'var(--M)':'#D9D0C8';document.getElementById('pt-pro').style.borderColor=t==='pro'?'var(--M)':'#D9D0C8';document.getElementById('marge-row').style.display=t==='pro'?'block':'none';}
+async function continuerAnalyse(){if(!pxType){toast('Choisissez le type de prix.','err');return;}const m=pxType==='pro'?parseFloat(document.getElementById('marge-v').value)||35:0;fm('md-pxt');lancerAnalyse(pxType,m);}
+async function lancerAnalyse(pt,mg){
+  const dz=document.getElementById('dropzone');
+  dz.innerHTML='<div class="drop-ic">⏳</div><div class="drop-ttl">Analyse en cours…</div><div class="drop-sub">Extraction par IA</div>';
+  document.getElementById('rapport').classList.remove('on');
+  try{
+    const file=impFiles[0];const b64=await b64f(file);
+    const res=await post({action:'analyser_document',filename:file.name,data:b64,type:file.type,doc_type:impType,prix_type:pt,marge:mg});
+    if(res.error)throw new Error(res.error);
+    affRapport(res,file.name);
+    const imp={id:uid(),date:new Date().toLocaleDateString('fr-FR'),fichier:file.name,type:impType,fournisseur:res.fournisseur||'—',lignes:res.nb_lignes||0,conf:res.confiance||50,statut:'à vérifier',data:res};
+    imports.unshift(imp);renderImp();toast('Analyse terminée.','ok');
+  }catch(e){toast('Erreur : '+e.message,'err');}
+  finally{resetDZ();}
 }
-async function get(action,params=''){
-  const r=await fetch(`${SCRIPT_URL}?action=${action}${params}`);
-  return r.json();
+function resetDZ(){const dz=document.getElementById('dropzone');dz.innerHTML=`<input type="file" id="file-base" accept=".pdf,.jpg,.jpeg,.png,.webp,.xls,.xlsx,.csv,.doc,.docx" multiple style="display:none" onchange="analyserBase(this.files)"><div class="drop-ic">📄</div><div class="drop-ttl">Déposer vos documents ici ou cliquer pour parcourir</div><div class="drop-sub" id="drop-hint">${TH[impType]||''}</div>`;dz.onclick=()=>document.getElementById('file-base').click();}
+function affRapport(res,fn){
+  const rp=document.getElementById('rapport');
+  document.getElementById('rap-titre').textContent='Analyse : '+fn;
+  const nb=res.nb_lignes||0,cf=res.confiance||0,nn=res.nb_nouveaux||0,nu=res.nb_mis_a_jour||0,nd=res.nb_doublons||0,ni=res.nb_incertains||0;
+  document.getElementById('rap-grid').innerHTML=`
+    <div class="rap-it rap-ok"><div class="rap-itl">✅ Extraites</div><div class="rap-itv">${nb}</div></div>
+    <div class="rap-it rap-new"><div class="rap-itl">🆕 Nouveaux</div><div class="rap-itv">${nn}</div></div>
+    <div class="rap-it rap-ok"><div class="rap-itl">📈 Mis à jour</div><div class="rap-itv">${nu}</div></div>
+    <div class="rap-it rap-warn"><div class="rap-itl">🔁 Doublons</div><div class="rap-itv">${nd}</div></div>
+    <div class="rap-it ${ni>0?'rap-alert':'rap-ok'}"><div class="rap-itl">⚠️ Incertains</div><div class="rap-itv">${ni}</div></div>
+    <div class="rap-it ${cf>=70?'rap-ok':cf>=40?'rap-warn':'rap-alert'}"><div class="rap-itl">🎯 Confiance</div><div class="rap-itv">${cf}%</div></div>`;
+  const lines=res.lignes||[];
+  document.getElementById('rap-lines').innerHTML=lines.slice(0,15).map(l=>`<div style="background:var(--G2);border-radius:5px;padding:6px 10px;font-size:12px;display:flex;justify-content:space-between;gap:10px;"><span style="flex:1;">${esc(l.designation||l.prestation||'')}</span><span style="color:var(--TL);">${l.unite||'m²'}</span><span style="font-weight:600;color:var(--M);">${l.pu_ht||l.prix||'?'} €</span></div>`).join('')+(lines.length>15?`<div style="text-align:center;font-size:11px;color:var(--TL);padding:5px;">+${lines.length-15} autres…</div>`:'');
+  rp._data=res;rp.classList.add('on');
 }
-async function toB64(file){
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
+async function validerImport(){
+  const rp=document.getElementById('rapport');if(!rp._data){toast('Aucune donnée.','err');return;}
+  const btn=document.getElementById('btn-vi');btn.disabled=true;btn.innerHTML='<span class="sp"></span>';
+  try{const res=await post({action:'valider_import',data:rp._data});if(res.error)throw new Error(res.error);const i=imports.findIndex(x=>x.data===rp._data);if(i>=0)imports[i].statut='validé';renderImp();rp.classList.remove('on');rp._data=null;toast(`✔ ${res.nb_integres||0} ligne${(res.nb_integres||0)>1?'s':''} intégrée${(res.nb_integres||0)>1?'s':''}.`,'ok');}
+  catch(e){toast('Erreur : '+e.message,'err');}
+  finally{btn.disabled=false;btn.innerHTML='✔ Valider et intégrer';}
+}
+function rejeterImport(){const rp=document.getElementById('rapport');const i=imports.findIndex(x=>x.data===rp._data);if(i>=0)imports[i].statut='rejeté';renderImp();rp.classList.remove('on');rp._data=null;toast('Rejeté.','inf');}
+function renderImp(){
+  document.getElementById('imp-count').textContent=`${imports.length} document${imports.length>1?'s':''}`;
+  const TL={fournisseur:'Facture fourn.',catalogue:'Base prix',devis_ab:'Devis AB',chantier:'Chantier',divers:'Divers'};
+  if(!imports.length){document.getElementById('imp-body').innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--TL);font-size:12px;">Aucun import</td></tr>';return;}
+  document.getElementById('imp-body').innerHTML=imports.map(m=>`<tr><td>${m.date}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(m.fichier)}</td><td>${TL[m.type]||m.type}</td><td>${esc(m.fournisseur)}</td><td class="r">${m.lignes}</td><td>${m.conf}%</td><td><span class="st ${m.statut==='validé'?'stv':m.statut==='rejeté'?'str':'stw'}">${m.statut}</span></td><td><button class="btn br bxs" onclick="imports=imports.filter(i=>i.id!=='${m.id}');renderImp();">✕</button></td></tr>`).join('');
 }
 
-/* ═══════════════════════════════════════════════════
-   MODALS / TOAST / UTILS
-═══════════════════════════════════════════════════ */
+/* BIBLIOTHÈQUE */
+async function chargerBib(){
+  const g=document.getElementById('bib-grid');g.innerHTML='<div class="empty"><span style="font-size:24px">⏳</span><span>Chargement…</span></div>';
+  try{const res=await get('list');if(res.error)throw new Error(res.error);bib=(res.libelles||[]).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));filtrerBib();}
+  catch(e){g.innerHTML=`<div class="empty"><span>❌ ${esc(e.message)}</span></div>`;}
+}
+function filtrerBib(){
+  const q=document.getElementById('bib-q').value.toLowerCase().trim();
+  const f=q?bib.filter(l=>(l.prestation||'').toLowerCase().includes(q)||(l.libelle||'').toLowerCase().includes(q)):bib;
+  document.getElementById('bib-count').textContent=`${f.length} libellé${f.length!==1?'s':''}`;
+  if(!f.length){document.getElementById('bib-grid').innerHTML='<div class="empty"><span style="font-size:24px">🔍</span><span>Aucun résultat</span></div>';return;}
+  document.getElementById('bib-grid').innerHTML=f.map(l=>{const d=l.date?new Date(l.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';const p=l.prix_bas&&l.prix_haut?`${l.prix_bas}–${l.prix_haut}€/${l.unite||'m²'}`:l.prix_bas?`${l.prix_bas}€/${l.unite||'m²'}`:null;return`<div class="bc"><div><div class="bc-top"><div class="bc-pre">${esc(l.prestation||'')}</div><span class="bc-tag">${esc(l.unite||'m²')}</span></div><div class="bc-lib">${esc(l.libelle||'')}</div><div class="bc-meta">${p?`<span class="bc-prix">💰 ${esc(p)}</span>`:''}${l.prix_abrenov?`<span class="bc-prix">AB: ${l.prix_abrenov}€</span>`:''}<span>📅 ${d}</span></div></div><div class="bc-acts"><button class="btn bs bxs" onclick="navigator.clipboard.writeText('${esc(l.libelle||'')}').then(()=>toast('Copié !','ok'))">⎘</button><button class="btn bl bxs" onclick="libVD('${esc(l.id||'')}')">→ Devis</button><button class="btn br bxs" onclick="suppB('${esc(l.id||'')}')">✕</button></div></div>`;}).join('');
+}
+function libVD(id){const l=bib.find(x=>x.id==id);if(!l)return;lignes.push({id:uid(),type:'ligne',lot:'Divers',designation:l.libelle||'',qte:null,unite:l.unite||'m²',pu:l.prix_abrenov||l.prix_bas||null,source:'bib',si:0,conf:'eleve'});nav('devis',document.querySelector('.nt'));render();toast('Ajouté au devis.','ok');}
+async function suppB(id){if(!confirm('Supprimer ?'))return;try{const res=await post({action:'delete',id});if(res.error)throw new Error(res.error);bib=bib.filter(x=>x.id!=id);filtrerBib();toast('Supprimé.','inf');}catch(e){toast('Erreur : '+e.message,'err');}}
+
+/* FETCH */
+async function post(b){const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});return r.json();}
+async function get(a){const r=await fetch(`${SCRIPT_URL}?action=${a}`);return r.json();}
+async function b64f(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});}
+
+/* MODALS / TOAST / UTILS */
 function om(id){document.getElementById(id).classList.add('on');}
 function fm(id){document.getElementById(id).classList.remove('on');}
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
 let _tt;
-function toast(msg,type='inf'){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.className='on '+(type==='ok'?'ok':type==='err'?'err':'inf');
-  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),3400);
-}
-function uid(){return 'x'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
+function toast(m,t='inf'){const el=document.getElementById('toast');el.textContent=m;el.className='on '+(t==='ok'?'ok':t==='err'?'err':'inf');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),3400);}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,4);}
 function fmt(n){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cp(o){return JSON.parse(JSON.stringify(o));}
+
+// Init
+render();
 </script>
 </body>
 </html>
