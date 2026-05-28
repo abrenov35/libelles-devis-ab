@@ -617,7 +617,7 @@ td { padding: 7px 12px; vertical-align: middle; }
 /* ════════════════════════════════
    CONFIG
 ════════════════════════════════ */
-const SCRIPT = 'https://script.google.com/macros/s/AKfycbx4rgfT64uDga6qYCZ9KGZtdaM2sQjRhvPjen_oSJTv1PzB-pAm75S12V7J47cLIY6x/exec';
+const SCRIPT = 'https://script.google.com/macros/s/AKfycbyjNo987wTAqZSSojv3uHi1Xwna4dwx-NLGdtd9WwHGFGjKD2tso-Mf5nlQLARmbCHZ/exec';
 const LOTS = ['Électricité','Plomberie','Sanitaire','Fourniture','Pose','Maçonnerie','Peinture','Carrelage','Menuiserie','Isolation','Divers'];
 const UNITS = ['m²','ml','m³','unité','forfait','heure','jour','point','équipement'];
 const STYLES = ['Commercial','Standard','Technique','Court'];
@@ -1139,15 +1139,27 @@ async function suppBib(id) {
 }
 
 /* ════════════════════════════════
-   API
+   API — Google Apps Script
+   GAS bloque le CORS preflight (OPTIONS).
+   Solution : envoyer les données en GET avec paramètre encodé,
+   ou utiliser fetch sans Content-Type custom (pas de preflight).
 ════════════════════════════════ */
 async function api(body) {
-  const r = await fetch(SCRIPT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  return r.json();
+  // Encode body as URL param pour éviter le preflight CORS
+  const encoded = encodeURIComponent(JSON.stringify(body));
+  const r = await fetch(`${SCRIPT}?payload=${encoded}`, {
+    method: 'GET',
+    redirect: 'follow'
+  });
+  const txt = await r.text();
+  try { return JSON.parse(txt); }
+  catch(_) { throw new Error('Réponse invalide du script : ' + txt.substring(0, 100)); }
 }
 async function apiGet(action) {
-  const r = await fetch(`${SCRIPT}?action=${action}`);
-  return r.json();
+  const r = await fetch(`${SCRIPT}?action=${action}`, { redirect: 'follow' });
+  const txt = await r.text();
+  try { return JSON.parse(txt); }
+  catch(_) { throw new Error('Réponse invalide : ' + txt.substring(0, 100)); }
 }
 async function toB64(file) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
