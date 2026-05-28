@@ -617,7 +617,7 @@ td { padding: 7px 12px; vertical-align: middle; }
 /* ════════════════════════════════
    CONFIG
 ════════════════════════════════ */
-const SCRIPT = 'https://script.google.com/macros/s/AKfycbyjNo987wTAqZSSojv3uHi1Xwna4dwx-NLGdtd9WwHGFGjKD2tso-Mf5nlQLARmbCHZ/exec';
+const SCRIPT = 'https://script.google.com/macros/s/AKfycbztmrLVI-DlCptRVG_AVpjpxC1Qq-XfEO9ngPYIk-ROrTjfoDy1bDk0qrgNYWG7qzx_mw/exec';
 const LOTS = ['Électricité','Plomberie','Sanitaire','Fourniture','Pose','Maçonnerie','Peinture','Carrelage','Menuiserie','Isolation','Divers'];
 const UNITS = ['m²','ml','m³','unité','forfait','heure','jour','point','équipement'];
 const STYLES = ['Commercial','Standard','Technique','Court'];
@@ -1140,26 +1140,25 @@ async function suppBib(id) {
 
 /* ════════════════════════════════
    API — Google Apps Script
-   GAS bloque le CORS preflight (OPTIONS).
-   Solution : envoyer les données en GET avec paramètre encodé,
-   ou utiliser fetch sans Content-Type custom (pas de preflight).
+   Stratégie : POST avec text/plain évite le preflight CORS.
+   Content-Type text/plain = pas de preflight = pas de blocage.
 ════════════════════════════════ */
 async function api(body) {
-  // Encode body as URL param pour éviter le preflight CORS
-  const encoded = encodeURIComponent(JSON.stringify(body));
-  const r = await fetch(`${SCRIPT}?payload=${encoded}`, {
-    method: 'GET',
-    redirect: 'follow'
+  // text/plain n'envoie pas de preflight OPTIONS → contourne le CORS
+  const r = await fetch(SCRIPT, {
+    method: 'POST',
+    body: JSON.stringify(body)
+    // Pas de Content-Type header = text/plain par défaut = pas de preflight
   });
   const txt = await r.text();
   try { return JSON.parse(txt); }
-  catch(_) { throw new Error('Réponse invalide du script : ' + txt.substring(0, 100)); }
+  catch(_) { throw new Error('Réponse invalide : ' + txt.substring(0, 200)); }
 }
 async function apiGet(action) {
-  const r = await fetch(`${SCRIPT}?action=${action}`, { redirect: 'follow' });
+  const r = await fetch(`${SCRIPT}?action=${action}`);
   const txt = await r.text();
   try { return JSON.parse(txt); }
-  catch(_) { throw new Error('Réponse invalide : ' + txt.substring(0, 100)); }
+  catch(_) { throw new Error('Réponse invalide : ' + txt.substring(0, 200)); }
 }
 async function toB64(file) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
