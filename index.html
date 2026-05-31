@@ -1055,7 +1055,9 @@ async function doAnalyse(pt, mg) {
     const imp = { id: uid(), date: new Date().toLocaleDateString('fr-FR'), fichier: file.name, type: docType, fournisseur: res.fournisseur||'—', lignes: res.nb_lignes||0, conf: res.confiance||0, statut: 'à vérifier', _data: res };
     imports.unshift(imp); renderImports();
     // Sauvegarder dans Google Sheets
-    api({ action: 'save_import', imp: { id: imp.id, date: imp.date, fichier: imp.fichier, type: imp.type, fournisseur: imp.fournisseur, lignes: imp.lignes, conf: imp.conf, statut: imp.statut } }).catch(()=>{});
+    api({ action: 'save_import', imp: { id: imp.id, date: imp.date, fichier: imp.fichier, type: imp.type, fournisseur: imp.fournisseur, lignes: imp.lignes, conf: imp.conf, statut: imp.statut } })
+      .then(r => { if (r && r.id) imp.id = r.id; }) // Synchroniser l'ID GAS
+      .catch(()=>{});
     toast('Analyse terminée — validez ou rejetez.', 'ok');
   } catch(e) { toast('Erreur : ' + e.message, 'err'); }
   finally { resetDropArea(); }
