@@ -384,8 +384,6 @@ td { padding: 7px 12px; vertical-align: middle; }
   <div class="var-row" id="var-row">
     <span class="var-label">Variante</span>
     <button class="var-pill on" onclick="appliquerVariante('standard',this)">🔵 Standard</button>
-    <button class="var-pill" onclick="appliquerVariante('eco',this)">💚 Économique −25%</button>
-    <button class="var-pill" onclick="appliquerVariante('premium',this)">🟣 Premium +35%</button>
     <span class="hypo-btn" onclick="voirHypotheses()">Hypothèses IA →</span>
   </div>
 
@@ -681,10 +679,8 @@ function mkRow(l) {
 
 function appliquerVariante(v, el) {
   document.querySelectorAll('.var-pill').forEach(b => b.classList.remove('on')); el.classList.add('on');
-  if (v === 'eco') rows = baseRows.map(r => ({...r, id:uid(), pu: r.pu ? round(r.pu * .75) : null}));
-  else if (v === 'premium') rows = baseRows.map(r => ({...r, id:uid(), pu: r.pu ? round(r.pu * 1.35) : null}));
-  else rows = clone(baseRows);
-  render(); toast(v==='eco'?'💚 Éco −25%':v==='premium'?'🟣 Premium +35%':'🔵 Standard', 'info');
+  rows = clone(baseRows);
+  render(); toast('🔵 Standard', 'info');
 }
 
 function voirHypotheses() {
