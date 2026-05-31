@@ -640,6 +640,16 @@ let editingRow = null;
 let bib = [];
 let imports = [];
 
+async function chargerHistorique() {
+  try {
+    const res = await apiGet('listimports');
+    if (res.imports && res.imports.length) {
+      imports = res.imports;
+      renderImports();
+    }
+  } catch(_) {}
+}
+
 /* ════════════════════════════════
    NAVIGATION
 ════════════════════════════════ */
@@ -1044,6 +1054,8 @@ async function doAnalyse(pt, mg) {
     afficherRapport(res, file.name);
     const imp = { id: uid(), date: new Date().toLocaleDateString('fr-FR'), fichier: file.name, type: docType, fournisseur: res.fournisseur||'—', lignes: res.nb_lignes||0, conf: res.confiance||0, statut: 'à vérifier', _data: res };
     imports.unshift(imp); renderImports();
+    // Sauvegarder dans Google Sheets
+    api({ action: 'save_import', imp: { id: imp.id, date: imp.date, fichier: imp.fichier, type: imp.type, fournisseur: imp.fournisseur, lignes: imp.lignes, conf: imp.conf, statut: imp.statut } }).catch(()=>{});
     toast('Analyse terminée — validez ou rejetez.', 'ok');
   } catch(e) { toast('Erreur : ' + e.message, 'err'); }
   finally { resetDropArea(); }
@@ -1087,7 +1099,7 @@ async function validerImport() {
     const res = await api({ action: 'valider_import', data: rc._data });
     if (res.error) throw new Error(res.error);
     const i = imports.findIndex(x => x._data === rc._data);
-    if (i >= 0) imports[i].statut = 'validé';
+    if (i >= 0) { imports[i].statut = 'validé'; api({ action: 'update_import_statut', id: imports[i].id, statut: 'validé' }).catch(()=>{}); }
     renderImports(); rc.classList.remove('show'); rc._data = null;
     toast(`✔ ${res.nb_integres||0} ligne${(res.nb_integres||0)>1?'s':''} intégrée${(res.nb_integres||0)>1?'s':''}.`, 'ok');
   } catch(e) { toast('Erreur : ' + e.message, 'err'); }
@@ -1097,9 +1109,15 @@ async function validerImport() {
 function rejeterImport() {
   const rc = document.getElementById('rapport-card');
   const i = imports.findIndex(x => x._data === rc._data);
-  if (i >= 0) imports[i].statut = 'rejeté';
+  if (i >= 0) { imports[i].statut = 'rejeté'; api({ action: 'update_import_statut', id: imports[i].id, statut: 'rejeté' }).catch(()=>{}); }
   renderImports(); rc.classList.remove('show'); rc._data = null;
   toast('Import rejeté.', 'info');
+}
+
+function supprimerImport(id) {
+  imports = imports.filter(i => i.id !== id);
+  renderImports();
+  api({ action: 'delete_import', id }).catch(()=>{});
 }
 
 function renderImports() {
@@ -1115,7 +1133,7 @@ function renderImports() {
       <td>${m.lignes}</td>
       <td>${m.conf}%</td>
       <td><span class="badge-status ${m.statut==='validé'?'bs-ok':m.statut==='rejeté'?'bs-err':'bs-warn'}">${m.statut}</span></td>
-      <td><button class="btn btn-ghost btn-xs" onclick="imports=imports.filter(i=>i.id!=='${m.id}');renderImports();">✕</button></td>
+      <td><button class="btn btn-ghost btn-xs" onclick="supprimerImport('${m.id}')">✕</button></td>
     </tr>`).join('');
 }
 
