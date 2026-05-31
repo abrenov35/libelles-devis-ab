@@ -240,13 +240,14 @@ td { padding: 7px 12px; vertical-align: middle; }
 /* ═══ PAGE BASE MÉTIER ═══ */
 .doc-types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; flex-shrink: 0; }
 .doc-type {
+  padding: 8px 6px;
   background: var(--white); border-radius: var(--r2); padding: 14px 12px;
   box-shadow: var(--sh1); cursor: pointer; border: 2px solid transparent;
   transition: all .14s; text-align: center;
 }
 .doc-type:hover { border-color: var(--violet3); }
 .doc-type.sel { border-color: var(--navy2); background: #F0EBF8; }
-.dt-icon { font-size: 22px; margin-bottom: 6px; }
+.dt-icon { font-size: 18px; margin-bottom: 3px; }
 .dt-name { font-size: 11px; font-weight: 700; color: var(--navy2); letter-spacing: .2px; }
 .dt-desc { font-size: 10.5px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
 
@@ -256,9 +257,9 @@ td { padding: 7px 12px; vertical-align: middle; }
   background: var(--cream); flex-shrink: 0;
 }
 .drop-area:hover, .drop-area.over { border-color: var(--violet); background: #F0EBF8; }
-.drop-icon-big { font-size: 28px; margin-bottom: 8px; }
-.drop-title { font-size: 14px; font-weight: 600; color: var(--navy2); }
-.drop-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.drop-icon-big { font-size: 20px; margin-bottom: 4px; }
+.drop-title { font-size: 13px; font-weight: 600; color: var(--navy2); }
+.drop-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
 
 .rapport-card {
   background: var(--white); border-radius: var(--r); box-shadow: var(--sh1);
@@ -486,8 +487,11 @@ td { padding: 7px 12px; vertical-align: middle; }
       </div>
     </div>
     <div class="rap-stats" id="rap-stats"></div>
-    <div class="label" style="margin-bottom:8px;">Données extraites</div>
-    <div id="rap-lines" style="display:flex;flex-direction:column;gap:5px;max-height:150px;overflow-y:auto;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="label" style="margin:0;">Données extraites</div>
+      <input type="text" id="rap-search" placeholder="Rechercher..." oninput="filtrerRapLines()" style="font-size:11px;padding:4px 8px;border:1.5px solid var(--border);border-radius:var(--r3);width:160px;outline:none;font-family:inherit;color:var(--text);">
+    </div>
+    <div id="rap-lines" style="display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto;"></div>
   </div>
 
   <div class="imp-table-wrap">
@@ -1063,7 +1067,8 @@ function afficherRapport(res, fn) {
     <div class="rap-stat ${ni>0?'rs-err':'rs-ok'}"><div class="rs-label">⚠️ Incertains</div><div class="rs-val">${ni}</div></div>
     <div class="rap-stat ${cf>=70?'rs-ok':cf>=40?'rs-warn':'rs-err'}"><div class="rs-label">🎯 Confiance</div><div class="rs-val">${cf}%</div></div>`;
   const lines = res.lignes || [];
-  document.getElementById('rap-lines').innerHTML = lines.slice(0,15).map(l => `
+  document.getElementById('rap-lines')._allLines = lines;
+  document.getElementById('rap-lines').innerHTML = lines.slice(0,50).map(l => `
     <div style="background:var(--cream);border-radius:6px;padding:7px 10px;font-size:12px;display:flex;justify-content:space-between;gap:10px;">
       <span style="flex:1;">${esc(l.designation||l.prestation||'')}</span>
       <span style="color:var(--text2);">${l.unite||'m²'}</span>
@@ -1211,6 +1216,20 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
 render();
+
+function filtrerRapLines() {
+  const q = (document.getElementById('rap-search').value || '').toLowerCase().trim();
+  const container = document.getElementById('rap-lines');
+  const lines = container._allLines || [];
+  const filtered = q ? lines.filter(l => (l.designation||l.prestation||'').toLowerCase().includes(q)) : lines;
+  container.innerHTML = filtered.slice(0,100).map(l => `
+    <div style="background:var(--cream);border-radius:6px;padding:5px 10px;font-size:12px;display:flex;justify-content:space-between;gap:10px;">
+      <span style="flex:1;">${esc(l.designation||l.prestation||'')}</span>
+      <span style="color:var(--text2);flex-shrink:0;">${l.unite||'m²'}</span>
+      <span style="font-weight:600;color:var(--navy2);flex-shrink:0;">${l.pu_ht||l.prix||'?'} €</span>
+    </div>`).join('') + (filtered.length>100?`<div style="text-align:center;font-size:11px;color:var(--text2);padding:6px;">+${filtered.length-100} autres…</div>`:'');
+}
+
 </script>
 </body>
 </html>
