@@ -1056,7 +1056,7 @@ async function doAnalyse(pt, mg) {
     const imp = { id: uid(), date: new Date().toLocaleDateString('fr-FR'), fichier: file.name, type: docType, fournisseur: res.fournisseur||'—', lignes: res.nb_lignes||0, conf: res.confiance||0, statut: 'à vérifier', _data: res };
     imports.unshift(imp); renderImports();
     // Sauvegarder dans Google Sheets
-    api({ action: 'save_import', imp: { id: imp.id, date: imp.date, fichier: imp.fichier, type: imp.type, fournisseur: imp.fournisseur, lignes: imp.lignes, conf: imp.conf, statut: imp.statut } })
+    api({ action: 'save_import', imp: { id: imp.id, date: new Date().toISOString(), fichier: imp.fichier, type: imp.type, fournisseur: imp.fournisseur, lignes: imp.lignes, conf: imp.conf, statut: imp.statut } })
       .then(r => { if (r && r.id) imp.id = r.id; }) // Synchroniser l'ID GAS
       .catch(()=>{});
     toast('Analyse terminée — validez ou rejetez.', 'ok');
@@ -1129,7 +1129,7 @@ function renderImports() {
   if (!imports.length) { document.getElementById('imp-body').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text2);">Aucun import</td></tr>'; return; }
   document.getElementById('imp-body').innerHTML = imports.map(m => `
     <tr>
-      <td>${m.date}</td>
+      <td>${m.date ? new Date(m.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
       <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(m.fichier)}">${esc(m.fichier)}</td>
       <td>${TL[m.type]||m.type}</td>
       <td>${esc(m.fournisseur)}</td>
