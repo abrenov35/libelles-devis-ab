@@ -712,8 +712,21 @@ async function importerFichier(inp) {
   document.getElementById('btn-gen').disabled = true;
   toast('Analyse du fichier…', 'info');
   try {
-    const b64 = await toB64(inp.files[0]);
-    const res = await api({ action: 'analyser_fichier', filename: inp.files[0].name, data: b64, type: inp.files[0].type });
+    const file = inp.files[0];
+    let payload;
+    if (file.type === 'application/pdf') {
+      const texte = await extractPdfText(file);
+      if (texte && texte.length > 50) {
+        payload = { action: 'analyser_fichier', filename: file.name, texte: texte, type: 'text/plain' };
+      } else {
+        const b64 = await toB64(file);
+        payload = { action: 'analyser_fichier', filename: file.name, data: b64, type: file.type };
+      }
+    } else {
+      const b64 = await toB64(file);
+      payload = { action: 'analyser_fichier', filename: file.name, data: b64, type: file.type };
+    }
+    const res = await api(payload);
     if (res.error) throw new Error(res.error);
     rows = (res.lignes || []).map(l => mkRow(l));
     baseRows = clone(rows); render();
