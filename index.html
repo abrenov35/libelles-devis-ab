@@ -878,20 +878,56 @@ function copierEmail() {
 
 function exportXLSX() {
   if (!rows.length) { toast('Devis vide.', 'err'); return; }
-  const ht = calcHT(), tv = round(ht * tva / 100), ttc = round(ht + tv);
-  const data = [['Référence', 'Lot', 'Désignation', 'Quantité', 'Unité', 'P.U. HT €', 'TVA %', 'Total HT €']];
-  rows.forEach((r, i) => {
-    if (r.type === 'sep') { data.push(['', r.lot || '', '── ' + (r.lot || 'LOT') + ' ──', '', '', '', '', '']); return; }
-    data.push(['REF-' + String(i+1).padStart(3,'0'), r.lot||'', r.des||'', r.qte!=null?r.qte:'', r.unit||'m²', r.pu!=null?r.pu:'', tva, calcRowTotal(r)||'']);
+
+  // Format Vertuoza — 9 colonnes exactes
+  // Format: T=Titre(lot), S=Sous-titre, PO=Poste libre
+  // Colonnes: Format | Référence | Description | Quantite | TM | Unite | Prix Uni | Prix Total | Commentaire
+  const header = ['Format', 'Référence', 'Description', 'Quantite', 'TM', 'Unite', 'Prix Uni', 'Prix Total', 'Commentaire'];
+  const data = [header];
+
+  let refCounter = 1;
+  rows.forEach(r => {
+    if (r.type === 'sep') {
+      // Lot → Titre (T)
+      data.push(['T', '', r.lot || 'LOT', '', '', '', '', '', '']);
+    } else {
+      const total = calcRowTotal(r);
+      const ref = 'REF-' + String(refCounter).padStart(3, '0');
+      refCounter++;
+      // Poste libre (PO)
+      data.push([
+        'PO',
+        ref,
+        r.des || '',
+        r.qte != null ? r.qte : '',
+        tva,
+        r.unit || 'm²',
+        r.pu != null ? r.pu : '',
+        total != null ? total : '',
+        ''
+      ]);
+    }
   });
-  data.push([], ['','','','','', 'Sous-total HT', '', ht], ['','','','','', `TVA ${tva}%`, '', tv], ['','','','','', 'TOTAL TTC', '', ttc]);
+
+  // Totaux en fin de fichier
+  const ht = calcHT(), tv = round(ht * tva / 100), ttc = round(ht + tv);
+  data.push(
+    ['', '', '', '', '', '', '', '', ''],
+    ['', '', 'Sous-total HT', '', '', '', '', ht, ''],
+    ['', '', 'TVA ' + tva + '%', '', '', '', '', tv, ''],
+    ['', '', 'TOTAL TTC', '', '', '', '', ttc, '']
+  );
+
   const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = [{wch:12},{wch:14},{wch:55},{wch:10},{wch:10},{wch:14},{wch:8},{wch:14}];
+  ws['!cols'] = [{wch:8},{wch:12},{wch:60},{wch:10},{wch:6},{wch:10},{wch:12},{wch:12},{wch:20}];
+
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, 'Devis AB RENOV 35', ws);
+  XLSX.utils.book_append_sheet(wb, 'Template', ws);
+
   const d = new Date();
-  XLSX.writeFile(wb, `DEVIS_ABRENOV35_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.xlsx`);
-  toast('✔ Fichier Vertuoza téléchargé !', 'ok');
+  const fname = `DEVIS_ABRENOV35_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.xlsx`;
+  XLSX.writeFile(wb, fname);
+  toast('✔ Export Vertuoza téléchargé !', 'ok');
 }
 
 /* ════════════════════════════════
