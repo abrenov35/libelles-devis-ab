@@ -1167,6 +1167,26 @@ function rejeterImport() {
   toast('Import rejeté.', 'info');
 }
 
+
+async function revaliderImport(id) {
+  const imp = imports.find(i => i.id === id);
+  if (!imp || imp.statut === 'validé') return;
+  if (!imp._data) {
+    toast('Données non disponibles — réuploadez le fichier.', 'err');
+    return;
+  }
+  const btn = document.querySelector(`[onclick="revaliderImport('${id}')"]`);
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  try {
+    const res = await api({ action: 'valider_import', data: imp._data });
+    if (res.error) throw new Error(res.error);
+    imp.statut = 'validé';
+    api({ action: 'update_import_statut', id: imp.id, statut: 'validé' }).catch(()=>{});
+    renderImports();
+    toast(`✔ ${res.nb_integres||0} ligne${(res.nb_integres||0)>1?'s':''} intégrée${(res.nb_integres||0)>1?'s':''} en bibliothèque.`, 'ok');
+  } catch(e) { toast('Erreur : ' + e.message, 'err'); }
+}
+
 function supprimerImport(id) {
   imports = imports.filter(i => i.id !== id);
   renderImports();
@@ -1178,7 +1198,7 @@ function renderImports() {
   const TL = { fournisseur:'Facture fourn.', catalogue:'Base prix', devis_ab:'Devis AB', chantier:'Chantier', divers:'Divers' };
   if (!imports.length) { document.getElementById('imp-body').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text2);">Aucun import</td></tr>'; return; }
   document.getElementById('imp-body').innerHTML = imports.map(m => `
-    <tr>
+    <tr style="cursor:${m.statut!=='validé'?'pointer':'default'}" onclick="revaliderImport('${m.id}')" title="${m.statut!=='validé'?'Cliquer pour revalider':''}">
       <td>${m.date ? new Date(m.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
       <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(m.fichier)}">${esc(m.fichier)}</td>
       <td>${TL[m.type]||m.type}</td>
@@ -1186,7 +1206,10 @@ function renderImports() {
       <td>${m.lignes}</td>
       <td>${m.conf}%</td>
       <td><span class="badge-status ${m.statut==='validé'?'bs-ok':m.statut==='rejeté'?'bs-err':'bs-warn'}">${m.statut}</span></td>
-      <td><button class="btn btn-ghost btn-xs" onclick="supprimerImport('${m.id}')">✕</button></td>
+      <td style="display:flex;gap:4px;" onclick="event.stopPropagation()">
+        ${m.statut!=='validé'?`<button class="btn btn-green btn-xs" onclick="revaliderImport('${m.id}')">✔ Valider</button>`:''}
+        <button class="btn btn-ghost btn-xs" onclick="supprimerImport('${m.id}')">✕</button>
+      </td>
     </tr>`).join('');
 }
 
