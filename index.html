@@ -614,7 +614,7 @@ td { padding: 7px 12px; vertical-align: middle; }
 /* ════════════════════════════════
    CONFIG
 ════════════════════════════════ */
-const SCRIPT = 'https://script.google.com/macros/s/AKfycbztmrLVI-DlCptRVG_AVpjpxC1Qq-XfEO9ngPYIk-ROrTjfoDy1bDk0qrgNYWG7qzx_mw/exec';
+const SCRIPT = 'https://script.google.com/macros/s/AKfycbwB6kYoCjVboUDfIRp17xRracyCj0E0IetFF10tU8oVCEV7TvR5Py7kiO6li_pjWFkn/exec';
 const LOTS = ['Électricité','Plomberie','Sanitaire','Fourniture','Pose','Maçonnerie','Peinture','Carrelage','Menuiserie','Isolation','Divers'];
 const UNITS = ['m²','ml','m³','unité','forfait','heure','jour','point','équipement'];
 const STYLES = ['Commercial','Standard','Technique','Court'];
@@ -1000,7 +1000,7 @@ async function lancerAnalyse() {
 
 async function doAnalyse(pt, mg) {
   const da = document.getElementById('drop-area');
-  da.innerHTML = '<div class="drop-icon-big">⏳</div><div class="drop-title">Analyse en cours…</div><div class="drop-sub">Extraction par IA GPT-4o</div>';
+  da.innerHTML = '<div class="drop-icon-big">⏳</div><div class="drop-title">Analyse en cours…</div><div class="drop-sub">Extraction par IA Claude</div>';
   document.getElementById('rapport-card').classList.remove('show');
   try {
     const file = pendingFiles[0];
