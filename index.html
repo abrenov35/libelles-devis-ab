@@ -518,6 +518,7 @@ td { padding: 7px 12px; vertical-align: middle; }
     </div>
     <span id="bib-count" style="font-size:11px;color:var(--text2);font-weight:600;white-space:nowrap;"></span>
     <button class="btn btn-ghost btn-sm" onclick="chargerBib()">↻ Actualiser</button>
+    <button class="btn btn-navy btn-sm" onclick="exportBibVertuoza()" title="Exporter au format Vertuoza">↓ Vertuoza</button>
   </div>
   <div class="bib-wrap" id="bib-wrap">
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:120px;color:var(--text2);gap:8px;font-size:13px;">
@@ -1179,6 +1180,44 @@ function renderImports() {
 /* ════════════════════════════════
    BIBLIOTHÈQUE
 ════════════════════════════════ */
+function exportBibVertuoza() {
+  if (!bib.length) { toast('Bibliothèque vide.', 'err'); return; }
+
+  // Format Vertuoza bibliothèque — 7 colonnes
+  // Onglet : Feuil1
+  const header = ["Description", "Catégories", "Unité", "Prix d'achat et marge (Y/N)", "Prix d'achat", "Marge", "Prix de vente"];
+  const data = [header];
+
+  bib.forEach(l => {
+    const prixAchat = l.prix_bas || '';
+    const prixVente = l.prix_abrenov || l.prix_haut || '';
+    // Calculer la marge si on a les deux prix
+    let marge = '';
+    if (prixAchat && prixVente && parseFloat(prixAchat) > 0) {
+      marge = Math.round(((parseFloat(prixVente) - parseFloat(prixAchat)) / parseFloat(prixAchat)) * 100);
+    }
+    data.push([
+      l.libelle || l.prestation || '',   // Description
+      l.prestation || '',                 // Catégories
+      l.unite || 'm²',                   // Unité
+      prixAchat ? 'Y' : 'N',            // Prix d'achat et marge (Y/N)
+      prixAchat,                          // Prix d'achat
+      marge !== '' ? marge + '%' : '',    // Marge
+      prixVente                           // Prix de vente
+    ]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [{wch:60},{wch:25},{wch:10},{wch:22},{wch:14},{wch:10},{wch:14}];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, 'Feuil1', ws);
+
+  const d = new Date();
+  XLSX.writeFile(wb, `BIBLIO_ABRENOV35_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.xlsx`);
+  toast(`✔ ${bib.length} libellés exportés Vertuoza !`, 'ok');
+}
+
 async function chargerBib() {
   const w = document.getElementById('bib-wrap');
   w.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100px;color:var(--text2);gap:8px;font-size:13px;"><span style="font-size:24px">⏳</span><span>Chargement…</span></div>';
