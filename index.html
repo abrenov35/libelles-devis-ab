@@ -6,6 +6,8 @@
 <title>AB RENOV 35 — Devis IA</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(typeof pdfjsLib!=="undefined") pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";</script>
 <style>
 :root {
   --navy: #0F1E35;
@@ -998,14 +1000,42 @@ async function lancerAnalyse() {
   await doAnalyse(prixType, marge);
 }
 
+async function extractPdfText(file) {
+  if (typeof pdfjsLib === 'undefined') return null;
+  const ab = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const tc = await page.getTextContent();
+    text += tc.items.map(s => s.str).join(' ') + '\n';
+  }
+  return text.trim();
+}
+
 async function doAnalyse(pt, mg) {
   const da = document.getElementById('drop-area');
   da.innerHTML = '<div class="drop-icon-big">⏳</div><div class="drop-title">Analyse en cours…</div><div class="drop-sub">Extraction par IA Claude</div>';
   document.getElementById('rapport-card').classList.remove('show');
   try {
     const file = pendingFiles[0];
-    const b64 = await toB64(file);
-    const res = await api({ action: 'analyser_document', filename: file.name, data: b64, type: file.type, doc_type: docType, prix_type: pt, marge: mg });
+    let payload;
+    // Pour les PDF : extraire le texte brut (beaucoup plus léger que base64)
+    if (file.type === 'application/pdf') {
+      const texte = await extractPdfText(file);
+      if (texte && texte.length > 50) {
+        payload = { action: 'analyser_document', filename: file.name, texte: texte, type: 'text/plain', doc_type: docType, prix_type: pt, marge: mg };
+      } else {
+        // Fallback base64 si extraction échoue
+        const b64 = await toB64(file);
+        payload = { action: 'analyser_document', filename: file.name, data: b64, type: file.type, doc_type: docType, prix_type: pt, marge: mg };
+      }
+    } else {
+      // Images et autres : base64
+      const b64 = await toB64(file);
+      payload = { action: 'analyser_document', filename: file.name, data: b64, type: file.type, doc_type: docType, prix_type: pt, marge: mg };
+    }
+    const res = await api(payload);
     if (res.error) throw new Error(res.error);
     afficherRapport(res, file.name);
     const imp = { id: uid(), date: new Date().toLocaleDateString('fr-FR'), fichier: file.name, type: docType, fournisseur: res.fournisseur||'—', lignes: res.nb_lignes||0, conf: res.confiance||0, statut: 'à vérifier', _data: res };
